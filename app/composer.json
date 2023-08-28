@@ -1,7 +1,6 @@
 {
 	"require": {
 		"phpunit/phpunit": "3.7.*",
-		"amaraimusi/crudbase" : "dev-master",
-		"vlucas/phpdotenv": "^5.5"
+		"amaraimusi/crudbase" : "dev-master"
 	}
 }

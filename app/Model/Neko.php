@@ -3,9 +3,9 @@
 
 namespace App\Model;
 
-class Neko{
+class Neko extends BaseX{
 	
 	public function test(){
-		dump('モデル');//■■■□□□■■■□□□)
+		dump('モデル2');//■■■□□□■■■□□□)
 	}
 }
