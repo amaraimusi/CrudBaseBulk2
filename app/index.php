@@ -1,5 +1,6 @@
 <?php 
 
+require_once 'vendor/autoload.php';
 
 global $g_baseData;
 
@@ -12,6 +13,15 @@ $method_name = $segments[4] ?? 'index'; // メソッド名を取得
 $model_name = camelize($class_name); // モデル名
 $base_path = dirname(__FILE__); // 基本パス
 
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+$dotenv->load();
+
+// 環境変数にアクセス
+$dbHost = getenv('DB_HOST');
+$dbName = getenv('DB_NAME');
+$dbUser = getenv('DB_USER');
+$dbPass = getenv('DB_PASS');
+
 $g_baseData = [
 		'url_path' => $url_path,
 		'main_path' => $main_path,
@@ -21,9 +31,7 @@ $g_baseData = [
 		'base_path' => $base_path,
 ];
 
-// require_once $base_path . '\\Controller/NekoContoller.php';
-// $neko = new  App\Controller\NekoController();
-// echo $neko->bark();
+
 
 
 require_once 'autoload.php';
