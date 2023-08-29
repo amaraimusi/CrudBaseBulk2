@@ -4,8 +4,8 @@ namespace CrudBase;
 /**
  * PDOのDAO（データベースアクセスオブジェクト）
  * 
- * @date 2019-10-26 | 2022-6-17
- * @version 1.4.0
+ * @date 2019-10-26 | 2023-8-29
+ * @version 1.4.1
  * @license MIT
  * @author Kenji Uehara
  *
@@ -39,10 +39,10 @@ class PdoDao implements IDao
         }
 
         try {
-            $this->dao = new PDO("mysql:host={$dbConf['host']};dbname={$dbConf['db_name']};charset=utf8",$dbConf['user'],$dbConf['pw'],
-            array(PDO::ATTR_EMULATE_PREPARES => false));
+            $this->dao = new \PDO("mysql:host={$dbConf['host']};dbname={$dbConf['db_name']};charset=utf8",$dbConf['user'],$dbConf['pw'],
+            array(\PDO::ATTR_EMULATE_PREPARES => false));
 
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             exit('データベース接続失敗。'.$e->getMessage());
             die;
         }

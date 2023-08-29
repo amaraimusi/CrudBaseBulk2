@@ -26,44 +26,23 @@ function camelize($str) {
 	return str_replace(' ', '', $str);
 }
 
-
-//　.envファイルから設定値を取得するオリジナル関数
-function getEnvSimple($env_fn) {
-	
-	// 引数のiniファイル名が空、もしくは存在しなければ、なら、nullを返して終了
-	if (! $env_fn)  return null;
-	
-	
-	$str = null;
-	$env_fn=mb_convert_encoding($env_fn,'SJIS','UTF-8');
-	if (!is_file($env_fn)){
-		return null;
-	}
-	
-	if ($fp = fopen ( $env_fn, "r" )) {
-		$data = array ();
-		while ( false !== ($line = fgets ( $fp )) ) {
-			$str .= mb_convert_encoding ( $line, 'utf-8', 'utf-8,sjis,euc_jp,jis' );
+//.envファイルから環境データを取得する
+function loadEnv($file)
+{
+	$env = [];
+	if (file_exists($file)) {
+		$handle = fopen($file, 'r');
+		if ($handle) {
+			while (($line = fgets($handle)) !== false) {
+				if (preg_match('/\A([a-zA-Z0-9_]+)=(.*)\z/', trim($line), $matches)) {
+					$name = $matches[1];
+					$value = $matches[2];
+					$env[$name] = $value;
+					//putenv("$name=$value");
+				}
+			}
+			fclose($handle);
 		}
 	}
-	fclose ( $fp );
-	
-	$ary = preg_split( "/¥R/", $str );
-	
-	$envs = [];
-	foreach($ary as $line_str){
-		$line_str = trim($line_str);
-		if(empty($line_str)) continue;
-		
-		$ary2 = preg_split("/=/", $line_str);
-		if(count($ary2) < 2) continue;
-		
-		$key = trim($ary2[0]);
-		if(empty($key)) continue;
-		
-		$envs[$key] = trim($ary2[1]);
-		
-	}
-	
-	return $envs;
+	return $env;
 }

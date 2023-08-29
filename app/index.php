@@ -5,7 +5,8 @@ require_once 'functions.php';
 
 // 環境データを取得する
 global $g_env;
-$g_env = getEnvSimple('.env');
+$g_env = loadEnv('.env');
+
 
 global $g_baseData; // 基本情報
 $url_path = $_SERVER['REQUEST_URI'];
