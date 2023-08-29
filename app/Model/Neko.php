@@ -14,6 +14,5 @@ class Neko extends BaseX{
 		$sql = "SELECT * FROM missions LIMIT 1";
 		$res = $this->query($sql);
 		
-		dump($res);//■■■□□□■■■□□□)
 	}
 }

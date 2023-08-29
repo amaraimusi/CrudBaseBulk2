@@ -13,7 +13,7 @@ class BaseXController {
 		
 		global $g_baseData;
 		
-		$view_file_path = $g_baseData['base_path'] . "\\View\\" . $view_path . ".php";
+		$view_file_path = $g_baseData['app_path'] . "\\View\\" . $view_path . ".php";
 		
 		
 		extract($dataSet);
