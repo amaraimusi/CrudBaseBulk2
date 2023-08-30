@@ -13,10 +13,13 @@ class NekoController extends BaseXController {
 	
 	public function index(){
 		
+		$dataSet = [];
 		
 		
-		dump('NekoController');//■■■□□□■■■□□□)
+		return $this->render('Neko/index', $dataSet);
 	}
+	
+	
 	public function bark(){
 		
 		//require_once 'Model/Neko.php';
