@@ -10,11 +10,14 @@
 	
 	<link href="/CrudBaseBulk2/public/node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
 	<link href="/CrudBaseBulk2/public/node_modules/bootstrap-icons/font/bootstrap-icons.min.css" rel="stylesheet">
-	<link href="/note_prg/css/highlight/default.css" rel="stylesheet">
 	<link href="/note_prg/css/common2.css" rel="stylesheet">
 	
-	<script src="/note_prg/js/jquery3.js"></script>	<!-- jquery-3.3.1.min.js -->
 	<script src="/CrudBaseBulk2/public/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+	
+	<script src="/CrudBaseBulk2/public/node_modules/vue/dist/vue.global.prod.js"></script>
+	<script src="/CrudBaseBulk2/public/node_modules/jquery/dist/jquery.min.js"></script>	<!-- jquery-3.3.1.min.js -->
+	<script src="/CrudBaseBulk2/public/js/Neko/index.js"></script>
+	
 	
 
 </head>
@@ -26,7 +29,14 @@
 <div id="sec1-1" class="sec4">
 	<h3>xxx</h3>
 
-<button type="button" class ="btn btn-info"><span class="text-light"><i class="bi bi-0-circle"></i></span></button>
+	<div id="app1">
+	  <div>{{ message1 }}</div>
+	  <input v-model="message1">
+	  <div v-bind:title="text1">アマミノクロウサギ:title属性にセット</div>
+	  <div v-bind:class="class1">サキシマハブ:クラス属性にセット</div>
+	</div>
+	
+	<button type="button" class ="btn btn-info"><span class="text-light"><i class="bi bi-0-circle"></i></span></button>
 
 	<br><time>2023-1-1</time>
 </div>
