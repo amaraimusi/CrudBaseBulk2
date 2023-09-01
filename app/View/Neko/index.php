@@ -1,3 +1,10 @@
+<?php 
+global $g_env;
+
+$public_url = $g_env['public_url'];
+
+?>
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -6,17 +13,17 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>テンプレート | ワクガンス</title>
-	<link rel='shortcut icon' href='/home/images/favicon.ico' />
+	<link rel='shortcut icon' href='<?php echo $public_url; ?>/img/favicon.png' />
 	
-	<link href="/CrudBaseBulk2/public/node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
-	<link href="/CrudBaseBulk2/public/node_modules/bootstrap-icons/font/bootstrap-icons.min.css" rel="stylesheet">
-	<link href="/note_prg/css/common2.css" rel="stylesheet">
+	<link href="<?php echo $public_url; ?>/node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link href="<?php echo $public_url; ?>/node_modules/bootstrap-icons/font/bootstrap-icons.min.css" rel="stylesheet">
+	<link href="<?php echo $public_url; ?>/css/common/common.css" rel="stylesheet">
 	
-	<script src="/CrudBaseBulk2/public/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="<?php echo $public_url; ?>/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 	
-	<script src="/CrudBaseBulk2/public/node_modules/vue/dist/vue.global.prod.js"></script>
-	<script src="/CrudBaseBulk2/public/node_modules/jquery/dist/jquery.min.js"></script>	<!-- jquery-3.3.1.min.js -->
-	<script src="/CrudBaseBulk2/public/js/Neko/index.js"></script>
+	<script src="<?php echo $public_url; ?>/node_modules/vue/dist/vue.min.js"></script>
+	<script src="<?php echo $public_url; ?>/node_modules/jquery/dist/jquery.min.js"></script>	<!-- jquery-3.3.1.min.js -->
+	<script src="<?php echo $public_url; ?>/js/Neko/index.js"></script>
 	
 	
 
