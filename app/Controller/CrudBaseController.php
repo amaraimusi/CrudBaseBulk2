@@ -18,7 +18,7 @@ use CrudBase\PDOSessionHandler;
  * 基本コントローラ(プレーン版）
  * 
  * @since 2023-9-1
- * @version 1.0.0
+ * @version 0.01
  */
 class CrudBaseController{
 	
@@ -39,9 +39,6 @@ class CrudBaseController{
 		
 		$pdo = $this->dao->getPdo();
 		
-		//■■■□□□■■■□□□
-		//$pdo = new PDO("mysql:host=localhost;dbname=mydatabase", "username", "password");
-		
 		$handler = new PDOSessionHandler($pdo);
 		
 		session_set_save_handler(
@@ -56,9 +53,61 @@ class CrudBaseController{
 		// セッションを開始する
 		session_start();
 
-		dump($_SESSION['test']);//■■■□□□■■■□□□)
 		
 	}
+	
+	
+	/**
+	 * 新バージョン判定
+	 *
+	 * 	旧画面バージョンと現在の画面バージョンが一致するなら新バージョンフラグをOFFにする。
+	 * 	旧画面バージョンと現在の画面バージョンが不一致なら新バージョンフラグをONにする。
+	 * @param [] $sesSearches セッション検索データ
+	 * @param string $this_page_version 画面バージョン
+	 * @return int 新バージョンフラグ  0:バージョン変更なし（通常）, 1:新しいバージョン
+	 */
+	public function judgeNewVersion($sesSearches, $this_page_version){
+		
+		$old_page_version = $sesSearches['this_page_version'] ?? '';
+		$new_version = 0;
+		if($old_page_version != $this_page_version){
+			$new_version = 1;
+		}
+		return $new_version;
+	}
+	
+	
+	/**
+	 * ビューをレンダリング
+	 * @param string $view_path ビューのパス
+	 * @param string $dataSet ビューへ送るパラメータ
+	 * @return string
+	 */
+	public function render($view_path, $dataSet){
+		
+		global $g_baseData;
+		
+		$view_file_path = $g_baseData['app_path'] . "\\View\\" . $view_path . ".php";
+		
+		
+		extract($dataSet);
+		ob_start();
+		
+		include $view_file_path;
+		$html = ob_get_contents();
+		ob_end_clean();
+		
+		return $html;
+	}
+	
+	
+	
+	
+	
+	
+	
+	// ■■■□□□■■■□□□以下は吟味中
+	
 
 	/**
 	 * デフォルトページ情報を取得する
@@ -223,26 +272,6 @@ class CrudBaseController{
 		$request->session()->regenerateToken();
 		
 		return redirect('/');
-	}
-	
-	
-	/**
-	 * 新バージョン判定
-	 * 
-	 * 	旧画面バージョンと現在の画面バージョンが一致するなら新バージョンフラグをOFFにする。
-	 * 	旧画面バージョンと現在の画面バージョンが不一致なら新バージョンフラグをONにする。
-	 * @param [] $sesSearches セッション検索データ
-	 * @param string $this_page_version 画面バージョン
-	 * @return int 新バージョンフラグ  0:バージョン変更なし（通常）, 1:新しいバージョン
-	 */
-	public function judgeNewVersion($sesSearches, $this_page_version){
-		
-		$old_page_version = $sesSearches['this_page_version'] ?? '';
-		$new_version = 0;
-		if($old_page_version != $this_page_version){
-			$new_version = 1;
-		}
-		return $new_version;
 	}
 	
 	/**

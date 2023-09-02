@@ -13,7 +13,7 @@ $g_env = loadEnv($app_path . '\.env');
 
 
 global $g_baseData; // 基本情報
-$url_path = $_SERVER['REQUEST_URI'];
+$url_path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $segments = explode('/', $url_path);// '/'で区切る
 $sliced_segments = array_slice($segments, 0, 3);// 2番目の節までを取得
 $main_path = implode('/', $sliced_segments);// 配列を文字列に戻し、メインパスを作成

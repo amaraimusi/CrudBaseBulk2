@@ -57,6 +57,9 @@ class TypeAController extends CrudBaseController {
 	 */
 	public function index() {
 		
+		
+		$sesSearches = $_SESSION('neko_searches_key');// セッションからセッション検索データを受け取る
+		
 		dump('テスト');//■■■□□□■■■□□□)
 
 		die();//■■■□□□■■■□□□
