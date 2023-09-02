@@ -4,16 +4,26 @@ namespace CrudBase;
 /**
  * PDOのDAO（データベースアクセスオブジェクト）
  * 
- * @date 2019-10-26 | 2023-8-29
- * @version 1.4.1
+ * @date 2019-10-26 | 2023-9-1
+ * @version 1.4.2
  * @license MIT
- * @author Kenji Uehara
+ * @author amaraimusi
  *
  */
 class PdoDao implements IDao
 {
 	
     private $dao;
+    
+    private static $singleton;
+    
+    // シングルトン
+    public static function getInstance($dbConf){
+    	if (!isset(self::$singleton)) {
+    		self::$singleton = new PdoDao($dbConf);
+    	}
+    	return self::$singleton;
+    }
     
     /**
      * 初期化方法は下記の2通りある。
@@ -58,6 +68,10 @@ class PdoDao implements IDao
 	public function getDao(){
 
         return $this->dao;
+	}
+	
+	public function getPdo(){
+		return $this->dao;
 	}
 	
 	/**

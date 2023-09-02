@@ -8,7 +8,6 @@ class NekoController extends BaseXController {
 	
 	public function __construct() {
 		parent::__construct();  // 基本クラスのコンストラクタを呼び出す
-		// その他の初期化処理
 	}
 	
 	public function index(){
