@@ -3,7 +3,25 @@
 // デバッグ関数
 function debug($var){
 	echo '<pre>';
-	var_dump($var);
+	
+	
+	if(is_array($var)){
+		$depth = g_array_depth($var);
+		switch($depth){
+			case 1:
+				g_dumpEntity($var);
+				break;
+			case 2:
+				g_dumpData($var);
+				break;
+			default:
+				var_dump($var);
+		}
+	}else{
+		var_dump($var);
+	}
+		
+		
 	echo '</pre>';
 }
 
@@ -45,4 +63,37 @@ function loadEnv($file)
 		}
 	}
 	return $env;
+}
+
+// 配列の深度を調べる
+function g_array_depth(array $array): int {
+	$max_depth = 1;
+	
+	foreach ($array as $value) {
+		if (is_array($value)) {
+			$depth = g_array_depth($value) + 1;
+			
+			if ($depth > $max_depth) {
+				$max_depth = $depth;
+			}
+		}
+	}
+	
+	return $max_depth;
+}
+
+// エンティティ用のデバッグ
+function g_dumpEntity($ent){
+	foreach($ent as $field => $value){
+		echo "<div>{$field} = {$value}</div>";
+	}
+	
+}
+
+// データ用のデバッグ
+function g_dumpData($data){
+	foreach($data as $i => $ent){
+		echo "<div>■{$i}</div>";
+		g_dumpEntity($ent);
+	}
 }

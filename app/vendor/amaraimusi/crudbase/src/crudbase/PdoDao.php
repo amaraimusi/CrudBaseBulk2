@@ -4,8 +4,8 @@ namespace CrudBase;
 /**
  * PDOのDAO（データベースアクセスオブジェクト）
  * 
- * @date 2019-10-26 | 2023-9-1
- * @version 1.4.2
+ * @date 2019-10-26 | 2023-9-4
+ * @version 1.4.3
  * @license MIT
  * @author amaraimusi
  *
@@ -108,7 +108,9 @@ class PdoDao implements IDao
 	 * @return [][] 2次元構造データ
 	 */
 	public function sqlExe($sql){
-	    return $this->query($sql);
+		$stmt = $this->query($sql);
+		$res = $stmt->fetch(\PDO::FETCH_ASSOC);
+		return $res;
 	}
 	
 	/**
@@ -132,7 +134,7 @@ class PdoDao implements IDao
 			var_dump($err_msg);
 	    }
 	    
-	    $data = $stmt->fetchAll();
+	    $data = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 	    if($data === false){
 	        $errInfo = $this->dao->errorInfo();
 	        $err_msg = "

@@ -1,21 +1,18 @@
 <?php
 
-namespace App\Model;
+namespace App\Models;
 
-//■■■□□□■■■□□□
-// use Illuminate\Database\Eloquent\Model;
-// use Illuminate\Support\Facades\DB;
- use App\Model\CrudBase;
- 
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
+use App\Models\CrudBase;
+
 
 class Neko extends CrudBase
 {
+	protected $table = 'nekos'; // 紐づけるテーブル名
 	
-	//■■■□□□■■■□□□
-// 	protected $table = 'nekos'; // 紐づけるテーブル名
-	
-// 	const CREATED_AT = 'created_at';
-// 	const UPDATED_AT = 'updated_at';
+	const CREATED_AT = 'created_at';
+	const UPDATED_AT = 'updated_at';
 	
 	/**
 	 * The attributes that are mass assignable.
@@ -107,167 +104,162 @@ class Neko extends CrudBase
 		$use_type = $param['use_type'] ?? 'index';
 		$def_per_page = $param['def_per_page'] ?? 50;
 		
-		// 検索条件リストを作成
-		$whereList = $this->makeWhereList($searches);
+		// 一覧データを取得するSQLの組立。
+		$query = DB::table('nekos')->
+			leftJoin('users', 'nekos.update_user_id', '=', 'users.id');
+		
+		$query = $query->select(
+			// CBBXS-3034
+			'nekos.id as id',
+			'nekos.neko_val as neko_val',
+			'nekos.neko_name as neko_name',
+			'nekos.neko_date as neko_date',
+			'nekos.neko_type as neko_type',
+			'nekos.neko_dt as neko_dt',
+			'nekos.neko_flg as neko_flg',
+			'nekos.img_fn as img_fn',
+			'nekos.note as note',
+			'nekos.sort_no as sort_no',
+			'nekos.delete_flg as delete_flg',
+			'nekos.update_user_id as update_user_id',
+			'users.nickname as update_user',
+			'nekos.ip_addr as ip_addr',
+			'nekos.created_at as created_at',
+			'nekos.updated_at as updated_at',
+
+			// CBBXE
+			);
 		
 		// メイン検索
 		if(!empty($searches['main_search'])){
-			$whereList[] = "CONCAT( IFNULL(nekos.neko_name, '') , IFNULL(nekos.note, '') ) LIKE '%{$searches['main_search']}%'";
+			$concat = DB::raw("CONCAT( IFNULL(nekos.neko_name, '') , IFNULL(nekos.note, '') ) ");
+			$query = $query->where($concat, 'LIKE', "%{$searches['main_search']}%");
 		}
 		
-		// 検索条件リストを連結する
-		$where = implode(" AND ", $whereList);
+		$query = $this->addWheres($query, $searches); // 詳細検索情報をクエリビルダにセットする
 		
 		$sort_field = $searches['sort'] ?? 'sort_no'; // 並びフィールド
 		$dire = 'asc'; // 並び向き
 		if(!empty($searches['desc'])){
 			$dire = 'desc';
 		}
-		$order = $sort_field . ' ' . $dire;
+		$query = $query->orderBy($sort_field, $dire);
 		
 		// 一覧用のデータ取得。ページネーションを考慮している。
-		$limit = '';
 		if($use_type == 'index'){
 			
 			$per_page = $searches['per_page'] ?? $def_per_page; // 行制限数(一覧の最大行数) デフォルトは50行まで。
-			$page =  $searches['page'] ?? 0;
-			$offset = $per_page * $page;
-			$limit =" LIMIT {$per_page} OFFSET $offset" ;
+			$data = $query->paginate($per_page);
+			
+			return $data;
 			
 		}
-
-		$sql = "
-			SELECT SQL_CALC_FOUND_ROWS 
-				nekos.id as id,
-				nekos.neko_val as neko_val,
-				nekos.neko_name as neko_name,
-				nekos.neko_date as neko_date,
-				nekos.neko_type as neko_type,
-				nekos.neko_dt as neko_dt,
-				nekos.neko_flg as neko_flg,
-				nekos.img_fn as img_fn,
-				nekos.note as note,
-				nekos.sort_no as sort_no,
-				nekos.delete_flg as delete_flg,
-				nekos.update_user_id as update_user_id,
-				users.username as update_user,
-				nekos.ip_addr as ip_addr,
-				nekos.created_at as created_at,
-				nekos.updated_at as updated_at
-			FROM
-				nekos 
-			LEFT JOIN users ON nekos.update_user_id = users.id
-			WHERE 
-				{$where}
-			ORDER BY {$order}
-			{$limit}
-		";
-
-		$data = $this->query($sql); // DBから一覧データを取得する
-
-		// LIMIT制限を受けていないデータ件数を取得する
-		$res = $this->query("SELECT FOUND_ROWS();");
-		$total = 0;
-		if(!empty($res)){
-			$total = $res[0]['FOUND_ROWS()'];
+		
+		// CSV用の出力。Limitなし
+		elseif($use_type == 'csv'){
+			$data = $query->get();
+			$data2 = [];
+			foreach($data as $ent){
+				$data2[] = (array)$ent;
+			}
+			return $data2;
 		}
-
-		return [
-				'data' => $data,
-				'total' => $total,
-		];
-
+		
+		
 	}
 	
 	/**
-	 * 検索条件リストを作成
+	 * 詳細検索情報をクエリビルダにセットする
+	 * @param object $query クエリビルダ
 	 * @param [] $searches　検索データ
-	 * @return [] 検索条件リスト
+	 * @return object $query クエリビルダ
 	 */
-	private function makeWhereList($searches){
-		
-		$whereList = [];
-		
-		// SQLインジェクションのサニタイズ
-		$searches = $this->sqlSanitizeW($searches);
+	private function addWheres($query, $searches){
 		
 		// CBBXS-3003
 
 		// id
 		if(!empty($searches['id'])){
-			$whereList[] = "nekos.`id` = {$searches['id']}";
+			$query = $query->where('nekos.id',$searches['id']);
 		}
 
 		// neko_val
 		if(!empty($searches['neko_val'])){
-			$whereList[] = "nekos.`neko_val` = {$searches['neko_val']}";
+			$query = $query->where('nekos.neko_val',$searches['neko_val']);
 		}
 
 		// neko_name
 		if(!empty($searches['neko_name'])){
-			$whereList[] = "nekos.`neko_name` LIKE '%{$searches['neko_name']}%'";
+			$query = $query->where('nekos.neko_name', 'LIKE', "%{$searches['neko_name']}%");
 		}
 
 		// neko_date
 		if(!empty($searches['neko_date'])){
-			$whereList[] = "nekos.`neko_date` = '{$searches['neko_date']}'";
+			$query = $query->where('nekos.neko_date',$searches['neko_date']);
 		}
 
 		// 猫種別
 		if(!empty($searches['neko_type'])){
-			$whereList[] = "nekos.`neko_type` = {$searches['neko_type']}";
+			$query = $query->where('nekos.neko_type',$searches['neko_type']);
 		}
 
 		// neko_dt
 		if(!empty($searches['neko_dt'])){
-			$whereList[] = "nekos.`neko_dt` = '{$searches['neko_dt']}'";
+			$query = $query->where('nekos.neko_dt',$searches['neko_dt']);
+		}
+
+		// 無効フラグ
+		if(!empty($searches['delete_flg'])){
+			$query = $query->where('nekos.delete_flg',$searches['delete_flg']);
+		}else{
+			$query = $query->where('nekos.delete_flg', 0);
 		}
 
 		// 画像ファイル名
 		if(!empty($searches['img_fn'])){
-			$whereList[] = "nekos.`img_fn` LIKE '%{$searches['img_fn']}%'";
+			$query = $query->where('nekos.img_fn', 'LIKE', "%{$searches['img_fn']}%");
 		}
 
 		// 備考
 		if(!empty($searches['note'])){
-			$whereList[] = "nekos.`note` LIKE '%{$searches['note']}%'";
+			$query = $query->where('nekos.note', 'LIKE', "%{$searches['note']}%");
 		}
 
 		// 順番
 		if(!empty($searches['sort_no'])){
-			$whereList[] = "nekos.`sort_no` = {$searches['sort_no']}";
+			$query = $query->where('nekos.sort_no',$searches['sort_no']);
 		}
-		
+
 		// 無効フラグ
 		if(!empty($searches['delete_flg'])){
-			$whereList[] = "nekos.`delete_flg` = {$searches['delete_flg']}";
+			$query = $query->where('nekos.delete_flg',$searches['delete_flg']);
 		}else{
-			$whereList[] = "nekos.`delete_flg` = 0";
+			$query = $query->where('nekos.delete_flg', 0);
 		}
 
 		// 更新者
 		if(!empty($searches['update_user'])){
-			$whereList[] = "users.`username` = `{$searches['update_user']}`";
+			$query = $query->where('users.nickname',$searches['update_user']);
 		}
 
 		// IPアドレス
 		if(!empty($searches['ip_addr'])){
-			$whereList[] = "nekos.`ip_addr` LIKE '%{$searches['ip_addr']}%'";
+			$query = $query->where('nekos.ip_addr', 'LIKE', "%{$searches['ip_addr']}%");
 		}
 
 		// 生成日時
 		if(!empty($searches['created_at'])){
-			$whereList[] = "nekos.`created_at` >= '{$searches['created_at']}'";
+			$query = $query->where('nekos.created_at', '>=', $searches['created_at']);
 		}
 
 		// 更新日
 		if(!empty($searches['updated_at'])){
-			$whereList[] = "nekos.`updated_at` >= '{$searches['updated_at']}'";
+			$query = $query->where('nekos.updated_at', '>=', $searches['updated_at']);
 		}
 
 		// CBBXE
 		
-		return $whereList;
+		return $query;
 	}
 	
 	

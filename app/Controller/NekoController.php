@@ -21,8 +21,7 @@ class NekoController extends CrudBaseController {
 	public function index(){
 		
 		$request = new Request();
-		dump($request->id);//■■■□□□■■■□□□)
-		
+
 		$sesSearches = $_SESSION['neko_searches_key'] ?? [];// セッションからセッション検索データを受け取る
 		
 		// 新バージョンチェック  0:バージョン変更なし（通常）, 1:新しいバージョン
@@ -68,9 +67,18 @@ class NekoController extends CrudBaseController {
 		
 		$searches['this_page_version'] = $this->this_page_version; // 画面バージョン
 		$searches['new_version'] = $new_version; // 新バージョンフラグ
+		$_SESSION['neko_searches_key'] = $searches; // セッションに検索データを書き込む
 		
+		$userInfo = $this->getUserInfo(); // ログインユーザーのユーザー情報を取得する
+		$paths = $this->getPaths(); // パス情報を取得する
+		$def_per_page = 20; // デフォルト制限行数
 		
-		
+		$model = new Neko();
+		$fieldData = $model->getFieldData();
+		$data = $model->getData($searches, ['def_per_page' => $def_per_page]);
+		$data = $res['data'];
+		$total = $res['total'];
+
 		$dataSet = [];
 		
 		
