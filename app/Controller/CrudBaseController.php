@@ -85,9 +85,9 @@ class CrudBaseController{
 	 */
 	public function render($view_path, $dataSet){
 		
-		global $g_baseData;
+		global $g_env;
 		
-		$view_file_path = $g_baseData['app_path'] . "\\View\\" . $view_path . ".php";
+		$view_file_path = $g_env['app_path'] . "\\View\\" . $view_path . ".php";
 		
 		
 		extract($dataSet);
@@ -112,16 +112,16 @@ class CrudBaseController{
 		$userInfo = [
 				'id'=> 0,
 				'user_id'=> 0,
-				'name' => '',
-				'username' => '',
-				'user_name' => '',
-				'update_user' => '',
+				'name' => 'none',
+				'username' => 'none',
+				'user_name' => 'none',
+				'update_user' => 'none',
 				'ip_addr' => '',
 				'user_agent' => '',
 				'email'=>'',
 				'role' => 'oparator',
 				'delete_flg' => 0,
-				'nickname' => '',
+				'nickname' => 'none',
 				'authority_wamei'=>'',
 				'authority_name'=>'',
 				'authority_level'=>0, // 権限レベル(権限が強いほど大きな数値）
@@ -182,14 +182,33 @@ class CrudBaseController{
 	 * @return [] パス情報
 	 */
 	protected function getPaths(){
+		
+		global $g_env;
+		
+		$public_url = $g_env['public_url'];
 		$current_url_full = $_SERVER['REQUEST_URI'];
 		$current_path = $url_path = parse_url($current_url_full, PHP_URL_PATH);
-		$public_url = $current_path . '/public';
+		$url_path = $g_env['url_path']; // // 例→/CrudBaseBulk2/public/neko/index
+		$main_path = $g_env['main_path']; // // 例→/CrudBaseBulk2/public
+		$class_name = $g_env['class_name']; // // 例→neko
+		$method_name = $g_env['method_name']; // // 例→index
+		$model_name = $g_env['model_name']; // // 例→Neko
+		$base_path = $g_env['base_path']; // // 例→C:\Users\user\git\CrudBaseBulk2
+		$app_path = $g_env['app_path']; // // 例→C:\Users\user\git\CrudBaseBulk2\app
+		$public_path = $g_env['public_path']; // // 例→C:\Users\user\git\CrudBaseBulk2\public
 		
 		return [
 				'public_url' => $public_url,
 				'current_path' => $current_path,
 				'current_url_full' => $current_url_full,
+				'url_path' => $url_path,
+				'main_path' => $main_path,
+				'class_name' => $class_name,
+				'method_name' => $method_name,
+				'model_name' => $model_name,
+				'base_path' => $base_path,
+				'app_path' => $app_path,
+				'public_path' => $public_path,
 		];
 	}
 	

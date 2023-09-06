@@ -1,7 +1,10 @@
 <?php 
-global $g_env;
+namespace App\Helper;
 
-$public_url = $g_env['public_url'];
+$ver_str = '?v=' . $this_page_version;
+$cbh = new CrudBaseHelper($crudBaseData);
+$public_url = $crudBaseData['paths']['public_url'];
+$app_path = $crudBaseData['paths']['app_path'];
 
 ?>
 
@@ -12,29 +15,26 @@ $public_url = $g_env['public_url'];
 	<meta name="google" content="notranslate" />
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>テンプレート | ワクガンス</title>
+	<title>ネコ管理画面 | ワクガンス</title>
 	<link rel='shortcut icon' href='<?php echo $public_url; ?>/img/favicon.png' />
 	
-	<link href="<?php echo $public_url; ?>/node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
-	<link href="<?php echo $public_url; ?>/node_modules/bootstrap-icons/font/bootstrap-icons.min.css" rel="stylesheet">
-	<link href="<?php echo $public_url; ?>/css/common/common.css" rel="stylesheet">
+	<link href="<?php echo $public_url; ?>/node_modules/bootstrap/dist/css/bootstrap.min.css<?php echo $ver_str; ?>" rel="stylesheet">
+	<link href="<?php echo $public_url; ?>/node_modules/bootstrap-icons/font/bootstrap-icons.min.css<?php echo $ver_str; ?>" rel="stylesheet">
+	<link href="<?php echo $public_url; ?>/css/common/common.css<?php echo $ver_str; ?>" rel="stylesheet">
 	
-	<script src="<?php echo $public_url; ?>/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-	
-	<script src="<?php echo $public_url; ?>/node_modules/vue/dist/vue.min.js"></script>
-	<script src="<?php echo $public_url; ?>/node_modules/jquery/dist/jquery.min.js"></script>	<!-- jquery-3.3.1.min.js -->
-	<script src="<?php echo $public_url; ?>/js/Neko/index.js"></script>
-	
-	
-
+	<script src="<?php echo $public_url; ?>/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js<?php echo $ver_str; ?>"></script>
+	<script src="<?php echo $public_url; ?>/node_modules/vue/dist/vue.min.js<?php echo $ver_str; ?>"></script>
+	<script src="<?php echo $public_url; ?>/node_modules/jquery/dist/jquery.min.js<?php echo $ver_str; ?>"></script>	<!-- jquery-3.3.1.min.js -->
+	<script src="<?php echo $public_url; ?>/js/Neko/index.js<?php echo $ver_str; ?>"></script>
 </head>
 <body>
-<div id="header" ><h1>テンプレート | ワクガンス</h1></div>
+
+<?php include($app_path . '\View\Layout\common_header.php'); ?>
 <div class="container">
 
 
 <div id="sec1-1" class="sec4">
-	<h3>xxx</h3>
+	<h3>ネコ管理画面</h3>
 
 	<div id="app1">
 	  <div>{{ message1 }}</div>
@@ -62,13 +62,13 @@ $public_url = $g_env['public_url'];
 	<li><a href="/">ホーム</a></li>
 	<li><a href="/note_prg">プログラミングの覚書</a></li>
 	<li><a href="/note_prg/js/">JavaScriptの覚書</a></li>
-	<li>テンプレート</li>
+	<li>ネコ管理画面</li>
 </ol>
 <ol class="breadcrumb">
 	<li><a href="/">ホーム</a></li>
 	<li><a href="/sample">サンプルソースコード</a></li>
 	<li><a href="/sample/js">JavaScript ｜ サンプル</a></li>
-	<li>テンプレート</li>
+	<li>ネコ管理画面</li>
 </ol>
 </div><!-- content -->
 <div id="footer">(C) amaraimusi 2023-1-1</div>

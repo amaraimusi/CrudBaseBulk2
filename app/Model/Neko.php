@@ -364,14 +364,18 @@ class Neko extends CrudBase
 	 */
 	public function getNekoTypeList(){
 		
-		$query = DB::table('neko_types')->
-		   select(['id', 'neko_type_name'])->
-		   where('delete_flg',0);
+		$sql = "
+			SELECT `id`, `neko_type_name`
+			FROM neko_types
+			WHERE `delete_flg` = 0;
+		";
 		
-		$res = $query->get();
+		$res = $this->query($sql);
+		
 		$list = [];
 		foreach($res as $ent){
-			$list[$ent->id] = $ent->neko_type_name;
+			$id = $ent['id'];
+			$list[$id] = $ent['neko_type_name'];
 		}
 
 		return $list;

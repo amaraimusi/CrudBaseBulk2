@@ -75,14 +75,42 @@ class NekoController extends CrudBaseController {
 		
 		$model = new Neko();
 		$fieldData = $model->getFieldData();
-		$data = $model->getData($searches, ['def_per_page' => $def_per_page]);
+		$res = $model->getData($searches, ['def_per_page' => $def_per_page]);
 		$data = $res['data'];
-		$total = $res['total'];
+		$data_count = $res['total'];
+		
+		$nekoTypeList = $model->getNekoTypeList(); // ネコ種別リスト
+		
+		$crudBaseData = [
+				'list_data'=>$data,
+				'data_count'=>$data_count,
+				'searches'=>$searches,
+				'userInfo'=>$userInfo,
+				'paths'=>$paths,
+				'fieldData'=>$fieldData,
+				'model_name_c'=>'Neko', // モデル名（キャメル記法）
+				'model_name_s'=>'neko', // モデル名（スネーク記法）
+				'def_per_page'=>$def_per_page, // デフォルト制限行数
+				'this_page_version'=>$this->this_page_version,
+				'new_version' => $new_version,
+				
+				// CBBXS-3020B
+				'nekoTypeList'=>$nekoTypeList,
+				// CBBXE
+		];
 
-		$dataSet = [];
-		
-		
-		return $this->render('Neko/index', $dataSet);
+		return $this->render('Neko/index', [
+				'data'=>$data,
+				'searches'=>$searches,
+				'userInfo'=>$userInfo,
+				'fieldData'=>$fieldData,
+				'this_page_version'=>$this->this_page_version,
+				'crudBaseData'=>$crudBaseData,
+				
+				// CBBXS-3020B
+				'nekoTypeList'=>$nekoTypeList,
+				// CBBXE
+		]);
 	}
 	
 	
