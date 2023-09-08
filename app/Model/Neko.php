@@ -162,9 +162,9 @@ class Neko extends CrudBase
 			ORDER BY {$order}
 			{$limit}
 		";
-
+			
 		$data = $this->query($sql); // DBから一覧データを取得する
-
+		
 		// LIMIT制限を受けていないデータ件数を取得する
 		$res = $this->query("SELECT FOUND_ROWS();");
 		$total = 0;

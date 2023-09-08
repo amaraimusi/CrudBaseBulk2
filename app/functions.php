@@ -97,3 +97,8 @@ function g_dumpData($data){
 		g_dumpEntity($ent);
 	}
 }
+
+// XSSサニタイズ
+function h($text){
+	return htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
+}

@@ -1,7 +1,7 @@
 <header class="navbar navbar-expand-lg  navbar-light bg-success mb-1">
     <div class="container-fluid d-flex ">
         <h3 class="header-name p-2 mt-2 ">
-            <a class="navbar-brand fs-3 text-light" href="<?php echo $pubic_path; ?>">CrudBaseBulk2</a>
+            <a class="navbar-brand fs-3 text-light" href="<?php echo $public_url; ?>">CrudBaseBulk2</a>
         </h3>    
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0">

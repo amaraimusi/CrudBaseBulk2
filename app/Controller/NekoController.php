@@ -78,11 +78,13 @@ class NekoController extends CrudBaseController {
 		$res = $model->getData($searches, ['def_per_page' => $def_per_page]);
 		$data = $res['data'];
 		$data_count = $res['total'];
-		
+
 		$nekoTypeList = $model->getNekoTypeList(); // ネコ種別リスト
 		
+		global $g_env; // 環境データ
+		
 		$crudBaseData = [
-				'list_data'=>$data,
+				'data'=>$data,
 				'data_count'=>$data_count,
 				'searches'=>$searches,
 				'userInfo'=>$userInfo,
@@ -93,6 +95,7 @@ class NekoController extends CrudBaseController {
 				'def_per_page'=>$def_per_page, // デフォルト制限行数
 				'this_page_version'=>$this->this_page_version,
 				'new_version' => $new_version,
+				'debug_mode' => $g_env['debug_mode'] ?? 1, // デバッグモード
 				
 				// CBBXS-3020B
 				'nekoTypeList'=>$nekoTypeList,

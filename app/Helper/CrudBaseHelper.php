@@ -6,9 +6,11 @@ class CrudBaseHelper
 {
     
     private $crudBaseData;
+    private $searches; // 検索データ
     
     public function __construct(&$crudBaseData){
         $this->crudBaseData = $crudBaseData;
+        $this->searches = $crudBaseData['searches'];
     }
 
     /**
@@ -71,6 +73,16 @@ class CrudBaseHelper
 		";
 
         return $html;
+    }
+    
+    
+    /**
+     * 通常の文字列をサニタイズしながら表示する
+     * @param mixed $value
+     * @return string
+     */
+    public function tdStr($value){
+    	return h($value);
     }
     
     
@@ -237,6 +249,37 @@ class CrudBaseHelper
     }
     
     
+    /**
+     * 単位付の表示
+     * @param string $value 値
+     * @param string $field フィールド
+     * @param string $unit_f 単位（前）
+     * @param string $unit_b 単位（後）
+     * @param array $option オプション
+     *     - boolean no_comma 3桁区切りなし
+     * @return string
+     */
+    public function tdUnit($value, $field, $unit_f='', $unit_b='', $option=[]){
+
+    	if(is_numeric($value)){
+    		if(empty($option['comma'])){
+    			$value = number_format($value);
+    		}
+    	}else{
+    		$value = h($value);
+    	}
+    	
+    	$html = "
+			<span>{$unit_f}</span>
+			<span class='js_display_value'>{$value}</span>
+			<span>{$unit_b}</span>
+			<span class='js_original_value' style='display:none'>{$value}</span>
+		";
+    	
+    	return $html;
+    }
+    
+    
     
     /**
      * 行入替ボタンを表示する
@@ -383,7 +426,7 @@ class CrudBaseHelper
         
         $def_op_name = '';
         
-        echo "<select  name='{$name}' {$optionStr} >";
+        echo "<select  name='{$name}' {$optionStr} class='form-control search_btn_x'>";
         
         if($empty!==null){
             $selected = '';
@@ -445,8 +488,10 @@ class CrudBaseHelper
      * @return string HTMLコード → <script>～
      */
     public function crudBaseJsDev($this_page_version){
-    	$path = public_path('js/CrudBase/src') ;
-    	$jsPaths = glob($path . '/*.js'); // ディレクトリ内のすべてのjsファイルを取得
+    	
+    	$public_path = $this->crudBaseData['paths']['public_path'];
+    	$public_url = $this->crudBaseData['paths']['public_url'];
+    	$jsPaths = glob($public_path . '/js/CrudBase/src/*.js'); // ディレクトリ内のすべてのjsファイルを取得
     	
     	$jsFiles = [];
     	foreach($jsPaths as $js_path){
@@ -455,7 +500,7 @@ class CrudBaseHelper
     	
     	$jsUrls = [];
     	foreach($jsFiles as $fn){
-    		$jsUrls[] = url('js/CrudBase/src/' . $fn);
+    		$jsUrls[] = $public_url . '/js/CrudBase/src/' . $fn;
     	}
     	
     	$ver_str = '?v=' . $this_page_version;
@@ -507,8 +552,10 @@ class CrudBaseHelper
      * @return string HTMLコード → <script>～
      */
     public function crudBaseCssDev($this_page_version){
-    	$path = public_path('css/CrudBase/src') ;
-    	$jsPaths = glob($path . '/*.css'); // ディレクトリ内のすべてのjsファイルを取得
+    	
+    	$public_path = $this->crudBaseData['paths']['public_path'];
+    	$public_url = $this->crudBaseData['paths']['public_url'];
+    	$jsPaths = glob($public_path . '/css/CrudBase/src/*.css'); // ディレクトリ内のすべてのjsファイルを取得
     	
     	$jsFiles = [];
     	foreach($jsPaths as $css_path){
@@ -517,7 +564,7 @@ class CrudBaseHelper
     	
     	$jsUrls = [];
     	foreach($jsFiles as $fn){
-    		$jsUrls[] = url('css/CrudBase/src/' . $fn);
+    		$jsUrls[] = $public_url . '/css/CrudBase/src/' . $fn;
     	}
     	
     	$ver_str = '?v=' . $this_page_version;
@@ -555,8 +602,6 @@ class CrudBaseHelper
     	
     	return $html;
     }
-    
-    
     
     
     /**
@@ -670,7 +715,7 @@ class CrudBaseHelper
 		$parent_element_selector = "sdg_{$field}";
 				
 		$html = "
-			<div class='kj_div kj_wrap {$parent_element_selector}' data-field='{$field}'>
+			<div class='kj_div kj_wrap {$parent_element_selector}' data-field='{$field}' style='display:inline-block'>
 				<div class='input select'>
 					<select name='{$field}' id='{$field}' style='{$width_style}' class='kjs_inp form-control sdg_select' title='{$title}'>
 						<option value=''>-- {$wamei} --</option>
@@ -684,6 +729,35 @@ class CrudBaseHelper
 				
 		return $html;
 				
+    }
+    
+    
+    /**
+     * 検索入力フォーム：削除SELECTボックス
+     * @param string $field フィールド
+     * @param string $wamei 和名
+     * @param array $option
+     */
+    public function inputKjDeleteFlg($field = 'delete_flg', $wamei = '有効/削除', $option=[]){
+    	
+    	$delete_flg = $this->searches[$field];
+    	$selected_0 = '';
+    	$selected_1 = '';
+    	if($delete_flg == 1){
+    		$selected_1 = 'selected';
+    	}else{
+    		$selected_0 = 'selected';
+    	}
+    	
+    	$html = "
+    	<select name='delete_flg' class='form-control search_btn_x'>
+	    	<option value=''> - 有効/削除 - </option>
+	    	<option value='0' {$selected_0}>有効</option>
+	    	<option value='1' {$selected_1}>削除</option>
+    	</select>
+    	";
+    	
+    	return $html;
     }
     
     
@@ -810,7 +884,7 @@ class CrudBaseHelper
     	}
     	
     	$html = "
-			<div class='kj_div kj_wrap' data-field='row_limit'>
+			<div class='kj_div kj_wrap' data-field='row_limit' style='width:100px;display:inline-block;'>
 				<div class='input select'>
 					<select name='per_page' id='row_limit'  class='kjs_inp form-control'>
 						{$option_html}
