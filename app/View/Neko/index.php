@@ -116,7 +116,7 @@ $debug_mode = $crudBaseData['debug_mode'];
 			<th data-field='id'><?php echo $cbh->sortLink($searches, 'neko', 'id', 'ID'); ?></th>
 			<th data-field='neko_val'><?php echo $cbh->sortLink($searches, 'neko', 'neko_val', 'ネコ数値'); ?></th>
 			<th data-field='neko_name'><?php echo $cbh->sortLink($searches, 'neko', 'neko_name', 'ネコ名'); ?></th>
-			<th data-field='neko_date'><?php echo $cbh->sortLink($searches, 'neko', 'neko_date', 'ネコ種別'); ?></th>
+			<th data-field='neko_date'><?php echo $cbh->sortLink($searches, 'neko', 'neko_date', 'ネコ日付'); ?></th>
 			<th data-field='neko_type'><?php echo $cbh->sortLink($searches, 'neko', 'neko_type', '猫種別'); ?></th>
 			<th data-field='neko_dt'><?php echo $cbh->sortLink($searches, 'neko', 'neko_dt', 'ネコ日時'); ?></th>
 			<th data-field='neko_flg'><?php echo $cbh->sortLink($searches, 'neko', 'neko_flg', 'ネコフラグ'); ?></th>
@@ -138,6 +138,19 @@ $debug_mode = $crudBaseData['debug_mode'];
 		<tr>
 			<td><?php echo $cbh->tdId($ent['id']); ?></td>
 			<td><?php echo $cbh->tdUnit($ent['neko_val'], 'neko_val', null, 'cm'); ?></td>
+			<td><?php echo $cbh->tdStr($ent['neko_name']); ?></td>
+			<td><?php echo $cbh->tdDate($ent['neko_date']); ?></td>
+			<td><?php echo $cbh->tdList($ent['neko_type'], $nekoTypeList); ?></td>
+			<td><?php echo $cbh->tdDate($ent['neko_dt']); ?></td>
+			<td><?php echo $cbh->tdFlg($ent['neko_flg']);  ?></td>
+			<td><?php echo $cbh->tdImg($ent, 'img_fn'); ?></td>
+			<td><?php echo $cbh->tdNote($ent['note'], 'note', 30) ?></td>
+			<td><?php echo $cbh->tdStr($ent['sort_no']); ?></td>
+			<td><?php echo $cbh->tdDeleteFlg($ent['delete_flg']); ?></td>
+			<td><?php echo $cbh->tdStr($ent['update_user']); ?></td>
+			<td><?php echo $cbh->tdStr($ent['ip_addr']); ?></td>
+			<td><?php echo $cbh->tdStr($ent['created_at']); ?></td>
+			<td><?php echo $cbh->tdStr($ent['updated_at']); ?></td>
 		</tr>
 		<?php } ?>
 	</tbody>
@@ -150,10 +163,9 @@ $debug_mode = $crudBaseData['debug_mode'];
 
 
 
-
-<div class="yohaku"></div>
-
 </div><!-- content -->
-<div id="footer">(C) amaraimusi 2023-1-1</div>
+
+<?php include($app_path . '\View\Layout\common_footer.php'); ?>
+
 </body>
 </html>

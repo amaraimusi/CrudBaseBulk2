@@ -82,6 +82,9 @@ class CrudBaseHelper
      * @return string
      */
     public function tdStr($value){
+    	if(is_numeric($value)){
+    		return $value;
+    	}
     	return h($value);
     }
     
