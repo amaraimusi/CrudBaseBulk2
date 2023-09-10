@@ -44,6 +44,9 @@ $debug_mode = $crudBaseData['debug_mode'];
 
 <div id="err" class="text-danger"></div>
 
+
+<?php echo $cbh->pagenation(); // ページネーション ?>
+
 <main>
 
 <!-- 検索フォーム -->

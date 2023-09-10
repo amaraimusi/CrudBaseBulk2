@@ -1,5 +1,7 @@
 <?php
 
+namespace CrudBase;
+
 /**
  * ページネーション制御クラス
  * 
@@ -11,8 +13,8 @@
  * - ページネーション情報としてページ目次、ソート用リンク、データ件数等を出力する。
  * 
  * @author k-uehara
- * @version 2.0.0
- * @date 2010-4-1 | 2022-3-1
+ * @version 2.1.0
+ * @date 2010-4-1 | 2023-9-8
  *
  */
 class PagenationEx{

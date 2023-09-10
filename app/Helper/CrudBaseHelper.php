@@ -1,6 +1,7 @@
 <?php 
 namespace App\Helper;
 use CrudBase\CrudBase;
+use CrudBase\PagenationEx3;
 
 class CrudBaseHelper
 {
@@ -11,6 +12,7 @@ class CrudBaseHelper
     public function __construct(&$crudBaseData){
         $this->crudBaseData = $crudBaseData;
         $this->searches = $crudBaseData['searches'];
+        $this->pagenationEx3 = new PagenationEx3();
     }
 
     /**
@@ -901,10 +903,76 @@ class CrudBaseHelper
     }
     
     
+    /**
+     * ページネーションを生成
+     * @param int $current_page 現在ページ
+     * @param int $per_page 制限行数
+     * @param int $total_count 全件数
+     */
+    public function pagenation(){
+    	
+    	$page_no = $this->searches['page'];
+    	$per_page = $this->searches['per_page'];
+    	$total_count = $this->crudBaseData['data_count'];
+
+    	return $this->pagenationEx3->pagenation($page_no, $per_page, $total_count);
+    	
+    	
+//     	'update_user' => $request->update_user, // 更新者
+//     	'page' => $request->sort, // ページ番号
+//     	'sort' => $request->sort, // 並びフィールド
+//     	'desc' => $request->desc, // 並び向き
+//     	'per_page' => $request->per_page, // 行制限数
+    	
+    	//■■■□□□■■■□□□
+//     	// 総ページ数を計算
+//     	$total_pages = ceil($total_count / $per_page);
+    	
+//     	// 開始ページと終了ページを計算
+//     	$start_page = max(1, $current_page - 2);
+//     	$end_page = min($total_pages, $current_page + 2);
+    	
+//     	// HTMLを生成
+//     	echo '<nav aria-label="Page navigation">';
+//     	echo '<ul class="pagination">';
+    	
+//     	// 「前へ」リンク
+//     	if ($current_page > 1) {
+//     		echo '<li class="page-item">';
+//     		echo '<a class="page-link" href="?page=' . ($current_page - 1) . '" aria-label="Previous">';
+//     		echo '<span aria-hidden="true">&laquo;</span>';
+//     		echo '</a>';
+//     		echo '</li>';
+//     	}
+    	
+//     	// 各ページへのリンク
+//     	for ($i = $start_page; $i <= $end_page; $i++) {
+//     		if ($i == $current_page) {
+//     			echo '<li class="page-item active"><span class="page-link">' . $i . '</span></li>';
+//     		} else {
+//     			echo '<li class="page-item"><a class="page-link" href="?page=' . $i . '">' . $i . '</a></li>';
+//     		}
+//     	}
+    	
+//     	// 「次へ」リンク
+//     	if ($current_page < $total_pages) {
+//     		echo '<li class="page-item">';
+//     		echo '<a class="page-link" href="?page=' . ($current_page + 1) . '" aria-label="Next">';
+//     		echo '<span aria-hidden="true">&raquo;</span>';
+//     		echo '</a>';
+//     		echo '</li>';
+//     	}
+    	
+//     	echo '</ul>';
+//     	echo '</nav>';
+    }
     
-    
-    
+
 }
+
+
+
+
 
 
 

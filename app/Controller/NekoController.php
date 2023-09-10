@@ -8,7 +8,7 @@ use CrudBase\Request;
 class NekoController extends CrudBaseController {
 	
 	// 画面のバージョン → 開発者はこの画面を修正したらバージョンを変更すること。バージョンを変更するとキャッシュやセッションのクリアが自動的に行われます。
-	public $this_page_version = '0.0.1';
+	public $this_page_version = '0.0.2';
 	
 	public function __construct() {
 		parent::__construct();  // 基本クラスのコンストラクタを呼び出す
@@ -28,6 +28,10 @@ class NekoController extends CrudBaseController {
 		$new_version = $this->judgeNewVersion($sesSearches, $this->this_page_version);
 		
 		$searches = []; // 検索データ
+
+		$def_per_page = 20; // デフォルト・制限行数
+		$def_sort_field = 'sort_no'; // デフォルト・ソートフィールド
+		$def_desc = 0; // デフォルト・ ソート向き 0:昇順, 1:降順
 		
 		// リクエストのパラメータが空でない、または新バージョンフラグがONである場合、リクエストから検索データを受け取る
 		if(!empty($request->all()) || $new_version == 1){
@@ -54,10 +58,10 @@ class NekoController extends CrudBaseController {
 					// CBBXE
 					
 					'update_user' => $request->update_user, // 更新者
-					'page' => $request->sort, // ページ番号
-					'sort' => $request->sort, // 並びフィールド
-					'desc' => $request->desc, // 並び向き
-					'per_page' => $request->per_page, // 行制限数
+					'page' => $request->page ?? 1, // ページ番号
+					'sort' => $request->sort ?? $def_sort_field, // 並びフィールド
+					'desc' => $request->desc ?? $def_desc, // 並び向き
+					'per_page' => $request->per_page ?? $def_per_page, // 行制限数
 			];
 			
 		}else{
@@ -71,7 +75,6 @@ class NekoController extends CrudBaseController {
 		
 		$userInfo = $this->getUserInfo(); // ログインユーザーのユーザー情報を取得する
 		$paths = $this->getPaths(); // パス情報を取得する
-		$def_per_page = 20; // デフォルト制限行数
 		
 		$model = new Neko();
 		$fieldData = $model->getFieldData();
@@ -104,6 +107,7 @@ class NekoController extends CrudBaseController {
 
 		return $this->render('Neko/index', [
 				'data'=>$data,
+				'data_count'=>$data_count,
 				'searches'=>$searches,
 				'userInfo'=>$userInfo,
 				'fieldData'=>$fieldData,
