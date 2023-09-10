@@ -44,9 +44,6 @@ $debug_mode = $crudBaseData['debug_mode'];
 
 <div id="err" class="text-danger"></div>
 
-
-<?php echo $cbh->pagenation(); // ページネーション ?>
-
 <main>
 
 <!-- 検索フォーム -->
@@ -111,6 +108,7 @@ $debug_mode = $crudBaseData['debug_mode'];
 
 
 
+<?php echo $cbh->pagenation(); // ページネーション ?>
 
 <table id="main_tbl" class="table table-striped table-bordered table-condensed">
 	<thead>
@@ -159,6 +157,7 @@ $debug_mode = $crudBaseData['debug_mode'];
 	</tbody>
 </table>
 
+<?php echo $cbh->pagenation(); // ページネーション ?>
 
 <?php include($app_path . '\View\Neko\form.php'); ?>
 
@@ -169,6 +168,8 @@ $debug_mode = $crudBaseData['debug_mode'];
 </div><!-- content -->
 
 <?php include($app_path . '\View\Layout\common_footer.php'); ?>
+
+<input type="hidden" id="crud_base_json" value='<?php echo $crud_base_json; ?>' />
 
 </body>
 </html>

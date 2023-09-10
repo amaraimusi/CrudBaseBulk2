@@ -76,6 +76,9 @@ class NekoController extends CrudBaseController {
 		$userInfo = $this->getUserInfo(); // ログインユーザーのユーザー情報を取得する
 		$paths = $this->getPaths(); // パス情報を取得する
 		
+		$csrf_token = $this->makeCsrfToken(); // CSRFトークンを発行する
+		$_SESSION['neko_csrf_token'] = $csrf_token;
+		
 		$model = new Neko();
 		$fieldData = $model->getFieldData();
 		$res = $model->getData($searches, ['def_per_page' => $def_per_page]);
@@ -87,6 +90,7 @@ class NekoController extends CrudBaseController {
 		global $g_env; // 環境データ
 		
 		$crudBaseData = [
+				'csrf_token'=>$csrf_token,
 				'data'=>$data,
 				'data_count'=>$data_count,
 				'searches'=>$searches,
@@ -104,6 +108,8 @@ class NekoController extends CrudBaseController {
 				'nekoTypeList'=>$nekoTypeList,
 				// CBBXE
 		];
+		
+		$crud_base_json = json_encode($crudBaseData, JSON_HEX_TAG | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_APOS);
 
 		return $this->render('Neko/index', [
 				'data'=>$data,
@@ -113,7 +119,7 @@ class NekoController extends CrudBaseController {
 				'fieldData'=>$fieldData,
 				'this_page_version'=>$this->this_page_version,
 				'crudBaseData'=>$crudBaseData,
-				
+				'crud_base_json'=>$crud_base_json,
 				// CBBXS-3020B
 				'nekoTypeList'=>$nekoTypeList,
 				// CBBXE

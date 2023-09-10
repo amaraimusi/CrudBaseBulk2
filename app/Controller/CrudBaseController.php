@@ -514,6 +514,15 @@ class CrudBaseController{
 		return $sort_no;
 	}
 	
+	/**
+	 * CSRFトークンを発行する
+	 * @return string CSRFトークン
+	 */
+	public function makeCsrfToken($length = 8)
+	{
+		return base_convert(mt_rand(pow(36, $length - 1), pow(36, $length) - 1), 10, 36);
+	}
+	
 	
 
 }
