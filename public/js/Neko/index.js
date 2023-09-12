@@ -114,7 +114,6 @@ $(()=>{
 	jqRegistMsg = $('.js_registering_msg'); // 登録成功メッセージ要素	←「登録中」、「登録しました」などのメッセージを表示する。
 	jqCreateMode = $('.js_create_mode'); // 新規入力モードのみ表示する要素
 	jqEditMode = $('.js_edit_mode'); // 編集モードのみ表示する要素
-
     
 });
 
@@ -314,7 +313,7 @@ function clickEditBtn(btn){
 	
     // 現在のボタンの位置から行インデックスを取得します。
     let row_index = crudBase.getRowIndexFromButtonPosition(btn);
-	
+
 	// SPA型・入力フォーム画面を開く
 	_showForm(row_index, 'edit');
 }
@@ -338,8 +337,7 @@ function clickCopyBtn(btn){
  * @param string inp_mode 入力モード　create:新規入力モード, edit:編集モード, copy:複製モード
  */
 function _showForm(row_index, inp_mode){
-	
-	
+
 	let ent = {};
 	if(inp_mode == 'create'){
 		// デフォルトエンティティを取得する
@@ -366,7 +364,7 @@ function _showForm(row_index, inp_mode){
 	
 	jqValidErrMsg .html(''); // エラーメッセージをクリア
 	jqRegistMsg.html(''); // 登録中のメッセージをクリア
-
+console.log('nekoneko2');//■■■□□□■■■□□□
 	jqMain.hide(); // メイン一覧テーブルを隠す
 	jqForm.show(); // 入力フォームを表示する
 	
@@ -398,7 +396,10 @@ function regAction(){
 	jqRegistMsg.html('登録中です...');
 	
 	// SPA型・登録アクション
-	crudBase.regAction(ent,'neko/reg_action', {
+		console.log('■■■□□□■■■□□□');//■■■□□□■■■□□□
+	console.log(crudBaseData.paths.public_url);//■■■□□□■■■□□□
+	let ajax_url = crudBaseData.paths.public_url + '/neko/reg_action';
+	crudBase.regAction(ent, ajax_url, {
 		'callback': (param)=>{
 			// DB登録後のコールバック処理内容
 			jqRegistMsg.html('登録しました。'); 

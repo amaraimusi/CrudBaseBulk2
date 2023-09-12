@@ -34,7 +34,6 @@ if(empty($g_env['public_path'])) $g_env['public_path'] = $public_path; // // 例
 
 
 require_once $app_path . '\autoload.php';
-require_once $app_path . '\Controller/BaseXContoller.php';
 require_once $app_path . '\Controller/' . $model_name . 'Controller.php';
 $ctrl_class = 'App\\Controller\\' . $model_name . 'Controller';
 $ctrlObj = new $ctrl_class;

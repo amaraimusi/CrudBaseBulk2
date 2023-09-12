@@ -24,8 +24,12 @@ class CrudBaseController{
 	
 	private $dao; // データベースアクセスオブジェクト
 	
+	private $screen_code; // 画面コード
+	
+	private $sessionKeys; // セッションのキーリスト
+	
 	// コンストラクタ
-	public function __construct() {
+	public function __construct($screen_code) {
 		global $g_env;
 		
 		$dbConf = [
@@ -53,6 +57,7 @@ class CrudBaseController{
 		// セッションを開始する
 		session_start();
 
+		$this->screen_code = $screen_code;
 		
 	}
 	
@@ -523,6 +528,45 @@ class CrudBaseController{
 		return base_convert(mt_rand(pow(36, $length - 1), pow(36, $length) - 1), 10, 36);
 	}
 	
+	
+	/**
+	 * セッションからデータを取得する
+	 * @param string $key キー
+	 * @return mixed 値
+	 */
+	public function getFromSession($key){
+		$key2 = $this->screen_code . $key;
+		return $_SESSION[$key2] ?? null;
+	}
+	
+	
+	/**
+	 * セッションからデータを削除する
+	 * @param string $key
+	 * @param mixed $value
+	 */
+	public function setToSession($key, $value){
+		$key2 = $this->screen_code . $key;
+		$_SESSION[$key2] = $value;
+		
+		$this->sessionKeys[] = $key;
+		
+		$this->sessionKeys = array_unique($this->sessionKeys); // 重複をクリア
+		
+	}
+	
+	
+	/**
+	 * セッションに保管している当画面が関係するデータをクリアする
+	 */
+	public function clearSession(){
+		foreach($this->sessionKeys as $key){
+			$key2 = $this->screen_code . $key;
+			unset($_SESSION[$key2]);
+		}
+
+		$this->sessionKeys = [];
+	}
 	
 
 }

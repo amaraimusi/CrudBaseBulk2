@@ -10,8 +10,10 @@ class NekoController extends CrudBaseController {
 	// 画面のバージョン → 開発者はこの画面を修正したらバージョンを変更すること。バージョンを変更するとキャッシュやセッションのクリアが自動的に行われます。
 	public $this_page_version = '0.0.2';
 	
+	private $screen_code = 'neko_sample';
+	
 	public function __construct() {
-		parent::__construct();  // 基本クラスのコンストラクタを呼び出す
+		parent::__construct($this->screen_code);  // 基本クラスのコンストラクタを呼び出す
 	}
 	
 	/**
@@ -22,7 +24,10 @@ class NekoController extends CrudBaseController {
 		
 		$request = new Request();
 
-		$sesSearches = $_SESSION['neko_searches_key'] ?? [];// セッションからセッション検索データを受け取る
+		//$sesSearches = $_SESSION['neko_searches_key'] ?? [];■■■□□□■■■□□□
+		$sesSearches = $this->getFromSession('neko_searches_key'); // セッションからセッション検索データを受け取る
+		if($sesSearches == null ) $sesSearches = [];
+		
 		
 		// 新バージョンチェック  0:バージョン変更なし（通常）, 1:新しいバージョン
 		$new_version = $this->judgeNewVersion($sesSearches, $this->this_page_version);
@@ -71,13 +76,15 @@ class NekoController extends CrudBaseController {
 		
 		$searches['this_page_version'] = $this->this_page_version; // 画面バージョン
 		$searches['new_version'] = $new_version; // 新バージョンフラグ
-		$_SESSION['neko_searches_key'] = $searches; // セッションに検索データを書き込む
+		//$_SESSION['neko_searches_key'] = $searches; ■■■□□□■■■□□□
+		$this->setToSession('neko_searches_key', $searches); // セッションに検索データを書き込む
 		
 		$userInfo = $this->getUserInfo(); // ログインユーザーのユーザー情報を取得する
 		$paths = $this->getPaths(); // パス情報を取得する
 		
 		$csrf_token = $this->makeCsrfToken(); // CSRFトークンを発行する
-		$_SESSION['neko_csrf_token'] = $csrf_token;
+		//$_SESSION['neko_csrf_token'] = $csrf_token;■■■□□□■■■□□□
+		$this->setToSession('neko_csrf_token', $csrf_token);
 		
 		$model = new Neko();
 		$fieldData = $model->getFieldData();
@@ -127,18 +134,98 @@ class NekoController extends CrudBaseController {
 	}
 	
 	
-	public function bark(){
+	/**
+	 * SPA型・入力フォームの登録アクション | 新規入力アクション、編集更新アクション、複製入力アクションに対応しています。
+	 * @return string
+	 */
+	public function reg_action(){
 		
-		//require_once 'Model/Neko.php';
-		$model = new Neko();
-		$model->test();
+		// CSRFトークン（Cross-site Request Forgery）による正規のページからアクセスが行われていることを証明確認する。
+		if($this->getFromSession('neko_csrf_token') != $_POST['_token']){
+			echo '・セッションタイムアウト（時間切れ）です。もう一度やりなおしてください。<br>・正規ページからアクセスしていますか？';
+			die();
+		}
 		
-		dump('にゃおーん');//■■■□□□■■■□□□)
-		$dataSet = [];
+		$json=$_POST['key1'];
+		$res = json_decode($json,true);
+		dump($res);//■■■□□□■■■□□□)
 		
-		return $this->render('Neko/bark', $dataSet);
+		//dump('■■■□□□■■■□□□');//■■■□□□■■■□□□)
+		//$this->getFromSession('neko_csrf_token');
+		
+		//■■■□□□■■■□□□
+// 		// ログアウトになっていたらログイン画面にリダイレクト
+// 		if(\Auth::id() == null) return redirect('login');
+		
+
+		
+		
+		
+// 		$ent = $res['ent'];
+		
+// 		// IDフィールドです。 IDが空である場合、 新規入力アクションという扱いになります。なお、複製入力アクションは新規入力アクションに含まれます。
+// 		$id = !empty($ent['id']) ? $ent['id'] : null;
+		
+// 		// DBテーブルからDBフィールド情報を取得します。
+// 		$dbFieldData = $this->getDbFieldData('nekos');
+		
+// 		// 値が空であればデフォルトをセットします。
+// 		$ent = $this->setDefalutToEmpty($ent, $dbFieldData);
+		
+// 		// モデルを生成します。 新規入力アクションは真っ新なモデルを生成しますが、編集更新アクションの場合は、行データが格納されたモデルを生成します。
+// 		$model = empty($id) ? new Neko() : Neko::find($id);
+		
+// 		$userInfo = $this->getUserInfo(); // ログインユーザーのユーザー情報を取得する
+		
+		
+		
+// 		// CBBXS-XXXX
+// 		$model->neko_val = $ent['neko_val']; // neko_val
+// 		$model->neko_name = $ent['neko_name']; // neko_name
+// 		$model->neko_date = $ent['neko_date']; // neko_date
+// 		$model->neko_type = $ent['neko_type']; // 猫種別
+// 		$model->neko_dt = $ent['neko_dt']; // neko_dt
+// 		$model->neko_flg = $ent['neko_flg']; // ネコフラグ
+// 		//$model->img_fn = $ent['img_fn']; // 画像ファイル名
+// 		$model->note = $ent['note']; // 備考
+		
+// 		// CBBXE
+		
+// 		$model->delete_flg = 0;
+// 		$model->update_user_id = $userInfo['id'];
+// 		$model->ip_addr = $userInfo['ip_addr'];
+// 		$model->updated_at = date('Y-m-d H:i:s');
+		
+		
+// 		if(empty($id)){
+// 			$model->sort_no =$this->getNextSortNo('nekos', 'asc');
+// 			$model->save(); // DBへ新規追加: 同時に$modelに新規追加した行のidがセットされる。
+// 			$ent['id'] = $model->id;
+// 		}else{
+// 			$model->update(); // DB更新
+// 		}
+		
+// 		// ▼ ファイルアップロード関連
+// 		$fileUploadK = CrudBase::factoryFileUploadK();
+// 		$front_img_fn = $ent['img_fn'];
+// 		$exist_img_fn = $model->img_fn;
+// 		$fRes = $fileUploadK->uploadForSpa('neko', $_FILES, $ent, 'img_fn', $front_img_fn, $exist_img_fn);
+// 		if($fRes['db_reg_flg']){
+// 			$model->img_fn = $fRes['reg_fp'];
+// 			$model->update(); // DB更新
+// 		}
+		
+// 		$ent = $model->toArray();
+		
+// 		if(!empty($fRes['errs'])) $ent['errs'] = $fRes['errs'];
+		
+// 		$json = json_encode($ent, JSON_HEX_TAG | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_APOS);
+		
+// 		return $json;
 	}
 	
+	
+
 
 	
 

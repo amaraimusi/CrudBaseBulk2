@@ -8,8 +8,8 @@
  * 他のJavaScriptライブラリとの競合問題を考え、ベースとなるライブラリはVue.jsではなくjQueryを採用しています。
  * 
  * @license MIT
- * @since 2016-9-21 | 2023-8-13
- * @version 4.0.1
+ * @since 2016-9-21 | 2023-9-12
+ * @version 4.0.3
  * @histroy
  * 2024-4-17 v4.0.0 保守性の問題解決のため、大幅なリニューアルをする。
  * 2019-6-28 v2.8.3 CSVフィールドデータ補助クラス | CsvFieldDataSupport.js
@@ -266,7 +266,7 @@ class CrudBase4{
 	* @return {} エンティティ
 	*/
 	getEntityFromCrudBaseData(id){
-		let data = this.crudBaseData.list_data.data;
+		let data = this._getData();
 
 		for(let i in data){
 			let ent = data[i];
@@ -285,7 +285,7 @@ class CrudBase4{
 	* @param {} pEnt エンティティ
 	*/
 	setEntityToCrudBaseData(pEnt){
-		let data = this.crudBaseData.list_data.data;
+		let data = this._getData();
 
 		for(let i in data){
 			let ent = data[i];
@@ -767,8 +767,7 @@ class CrudBase4{
 		}
 
 		// CSRFトークンを送信フォームデータにセットする。
-		let token = jQuery('#csrf_token').val();
-		fd.append( "_token", token );
+		fd.append( "_token", csrf_token );
 		
 		fetch(ajax_url, {
 			method: 'POST',
@@ -857,8 +856,7 @@ class CrudBase4{
 	* @throw CSRFトークン取得失敗
 	*/
 	_getCsrfToken(){
-		let csrf_token = '';
-		
+
 		if(this.crudBaseData.csrf_token) return this.crudBaseData.csrf_token;
 		
 		let csrfTokenElm = $('#csrf_token');
@@ -927,13 +925,25 @@ class CrudBase4{
 	}
 	
 	
+	/**　データを取得する
+	 */
+	_getData(){
+		if(this.crudBaseData.list_data){
+			return this.crudBaseData.list_data.data;
+		}else{
+			return this.crudBaseData.data;
+		}
+		 
+	}
+	
+	
 	/**
 	* CrudBaseData内で保持するデータに反映
 	* @param jQuery targetTr 行オブジェクト
 	* @param int id_prefix ID
 	*/
 	_setEntityToCrudBaseData(ent){
-		let data = this.crudBaseData.list_data.data;
+		let data = this._getData();
 		
 		// 編集時の反映
 		for(let i in data){

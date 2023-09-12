@@ -152,6 +152,15 @@ $debug_mode = $crudBaseData['debug_mode'];
 			<td><?php echo $cbh->tdStr($ent['ip_addr']); ?></td>
 			<td><?php echo $cbh->tdStr($ent['created_at']); ?></td>
 			<td><?php echo $cbh->tdStr($ent['updated_at']); ?></td>
+			
+			<td>
+
+				<?php echo $cbh->rowExchangeBtn($searches) ?><!-- 行入替ボタン -->
+				<button type="button" class="row_edit_btn btn btn-primary btn-sm" onclick="clickEditBtn(this)">編集</button>
+				<button type="button" class="row_copy_btn btn btn-success btn-sm" onclick="clickCopyBtn(this)">複製</button>
+				<?php echo $cbh->disabledBtn($searches, $ent['id']) ?><!-- 削除/削除取消ボタン（無効/有効ボタン） -->
+				<?php echo $cbh->destroyBtn($searches, $ent['id']) ?><!-- 抹消ボタン -->
+			</td>
 		</tr>
 		<?php } ?>
 	</tbody>
@@ -159,11 +168,11 @@ $debug_mode = $crudBaseData['debug_mode'];
 
 <?php echo $cbh->pagenation(); // ページネーション ?>
 
-<?php include($app_path . '\View\Neko\form.php'); ?>
 
 </main>
 
 
+<?php include($app_path . '\View\Neko\form.php'); ?>
 
 </div><!-- content -->
 
