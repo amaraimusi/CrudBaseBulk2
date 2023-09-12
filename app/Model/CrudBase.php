@@ -2,6 +2,7 @@
 namespace App\Model;
 
 use CrudBase\PdoDao;
+use CrudBase\SaveData;
 
 /**
  * モデルクラスのベースクラス
@@ -15,9 +16,13 @@ use CrudBase\PdoDao;
 class CrudBase{
 	
 	private $dao; // データベースアクセスオブジェクト
+	private $saveData; // データ保存クラスオブジェクト
     
-    public function __construct(){
-
+	public function __construct(){
+		global $g_dao;
+		$this->dao = $g_dao;
+		$this->saveData = new SaveData($g_dao);
+    	
     }
     
     
@@ -214,6 +219,25 @@ class CrudBase{
     	
     	return $data;
     	
+    }
+    
+    
+    /**
+     * DaoオブジェクトのGetter
+     * @return  IDao Daoオブジェクト
+     */
+    public function getDao(){
+    	return $this->dao;
+    }
+    
+    /**
+     * エンティティをDBの保存する。 idが存在すればUPDATE,　idが空であればINSERTになる。
+     * @param string $tbl_name テーブル名
+     * @param [] $ent エンティティ
+     * @return [] エンティティ（INSERTの場合はidがセットされている）
+     */
+    public function save($tbl_name, $ent){
+    	return $this->saveData->save($tbl_name, $ent);
     }
     
 

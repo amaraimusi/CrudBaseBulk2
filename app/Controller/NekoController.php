@@ -153,44 +153,26 @@ class NekoController extends CrudBaseController {
 		
 		// DBテーブルからDBフィールド情報を取得します。
 		$dbFieldData = $this->getDbFieldData('nekos');
+
+		// 値が空であればデフォルトをセットします。
+		$ent = $this->setDefalutToEmpty($ent, $dbFieldData);
 		
-		dump('$id＝' . $id);//■■■□□□■■■□□□)
+		$model = new Neko();
 		
-// 		// 値が空であればデフォルトをセットします。
-// 		$ent = $this->setDefalutToEmpty($ent, $dbFieldData);
-		
-// 		// モデルを生成します。 新規入力アクションは真っ新なモデルを生成しますが、編集更新アクションの場合は、行データが格納されたモデルを生成します。
-// 		$model = empty($id) ? new Neko() : Neko::find($id);
-		
-// 		$userInfo = $this->getUserInfo(); // ログインユーザーのユーザー情報を取得する
-		
-		
-		
-// 		// CBBXS-XXXX
-// 		$model->neko_val = $ent['neko_val']; // neko_val
-// 		$model->neko_name = $ent['neko_name']; // neko_name
-// 		$model->neko_date = $ent['neko_date']; // neko_date
-// 		$model->neko_type = $ent['neko_type']; // 猫種別
-// 		$model->neko_dt = $ent['neko_dt']; // neko_dt
-// 		$model->neko_flg = $ent['neko_flg']; // ネコフラグ
-// 		//$model->img_fn = $ent['img_fn']; // 画像ファイル名
-// 		$model->note = $ent['note']; // 備考
-		
-// 		// CBBXE
-		
-// 		$model->delete_flg = 0;
-// 		$model->update_user_id = $userInfo['id'];
-// 		$model->ip_addr = $userInfo['ip_addr'];
-// 		$model->updated_at = date('Y-m-d H:i:s');
+ 		$userInfo = $this->getUserInfo(); // ログインユーザーのユーザー情報を取得する
+ 		$ent['delete_flg'] = 0;
+ 		$ent['update_user_id'] = $userInfo['user_id'];
+ 		$ent['ip_addr'] = $userInfo['ip_addr'];
+ 		$ent['updated_at'] = date('Y-m-d H:i:s');
+
+		if(empty($id)){
+			$ent['sort_no'] =$this->getNextSortNo('nekos', 'asc');
+		}
+
+		$ent = $model->save('nekos', $ent); // DBへ登録（INSERT、UPDATE兼用）
 		
 		
-// 		if(empty($id)){
-// 			$model->sort_no =$this->getNextSortNo('nekos', 'asc');
-// 			$model->save(); // DBへ新規追加: 同時に$modelに新規追加した行のidがセットされる。
-// 			$ent['id'] = $model->id;
-// 		}else{
-// 			$model->update(); // DB更新
-// 		}
+		
 		
 // 		// ▼ ファイルアップロード関連
 // 		$fileUploadK = CrudBase::factoryFileUploadK();

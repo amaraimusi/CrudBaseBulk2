@@ -84,6 +84,10 @@ function g_array_depth(array $array): int {
 
 // エンティティ用のデバッグ
 function g_dumpEntity($ent){
+	if(!is_array($ent)){
+		echo "<div>{$ent}</div>";
+		return;
+	}
 	foreach($ent as $field => $value){
 		echo "<div>{$field} = {$value}</div>";
 	}

@@ -2,20 +2,11 @@
 
 namespace App\Model;
 
-//■■■□□□■■■□□□
-// use Illuminate\Database\Eloquent\Model;
-// use Illuminate\Support\Facades\DB;
  use App\Model\CrudBase;
  
 
 class Neko extends CrudBase
 {
-	
-	//■■■□□□■■■□□□
-// 	protected $table = 'nekos'; // 紐づけるテーブル名
-	
-// 	const CREATED_AT = 'created_at';
-// 	const UPDATED_AT = 'updated_at';
 	
 	/**
 	 * The attributes that are mass assignable.
