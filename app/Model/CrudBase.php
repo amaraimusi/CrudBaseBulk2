@@ -3,10 +3,6 @@ namespace App\Model;
 
 use CrudBase\PdoDao;
 
-//■■■□□□■■■□□□
-// use Illuminate\Database\Eloquent\Model;
-// use Illuminate\Support\Facades\DB;
-
 /**
  * モデルクラスのベースクラス
  * 
@@ -21,17 +17,7 @@ class CrudBase{
 	private $dao; // データベースアクセスオブジェクト
     
     public function __construct(){
-    	
-    	global $g_env;
-    	
-    	$dbConf = [
-    			'host' => $g_env['DB_HOST'], // ホスト名
-    			'db_name' => $g_env['DB_NAME'], // データベース名
-    			'user' => $g_env['DB_USER'], // DBユーザー名
-    			'pw' => $g_env['DB_PASS'], // DBパスワード
-    	];
-    	
-    	$this->dao = new PdoDao($dbConf);
+
     }
     
     
@@ -41,8 +27,10 @@ class CrudBase{
      * @return [] レスポンス
      */
     public function query($sql){
-    	return $this->dao->query($sql);
     	
+    	global $g_dao;
+    	return $g_dao->query($sql);
+
     }
     
     

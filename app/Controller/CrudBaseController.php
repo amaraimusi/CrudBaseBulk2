@@ -8,41 +8,26 @@ use CrudBase\PDOSessionHandler;
 //■■■□□□■■■□□□
 // use Illuminate\Http\Request;
 use App\Consts;
-// use App\Http\Controllers\Controller;
-// use Illuminate\Support\Arr;
-// use Illuminate\Support\Facades\DB;
-// use CrudBase\CrudBase;
-// use App\Consts\ConstCrudBase;
+
 
 /**
  * 基本コントローラ(プレーン版）
  * 
- * @since 2023-9-1
- * @version 0.01
+ * @since 2023-9-1 | 2023-9-12
+ * @version 0.9.1
  */
 class CrudBaseController{
-	
-	private $dao; // データベースアクセスオブジェクト
-	
+
 	private $screen_code; // 画面コード
 	
 	private $sessionKeys; // セッションのキーリスト
 	
 	// コンストラクタ
 	public function __construct($screen_code) {
-		global $g_env;
-		
-		$dbConf = [
-				'host' => $g_env['DB_HOST'], // ホスト名
-				'db_name' => $g_env['DB_NAME'], // データベース名
-				'user' => $g_env['DB_USER'], // DBユーザー名
-				'pw' => $g_env['DB_PASS'], // DBパスワード
-		];
-		
-		$this->dao = PdoDao::getInstance($dbConf);
-		
-		$pdo = $this->dao->getPdo();
-		
+
+		global $g_dao;
+		$pdo = $g_dao->getPdo();
+
 		$handler = new PDOSessionHandler($pdo);
 		
 		session_set_save_handler(
@@ -58,6 +43,19 @@ class CrudBaseController{
 		session_start();
 
 		$this->screen_code = $screen_code;
+		
+	}
+	
+	
+	/**
+	 * SQLクエリを実行する
+	 * @param string $sql
+	 * @return [] レスポンス
+	 */
+	public function query($sql){
+		
+		global $g_dao;
+		return $g_dao->query($sql);
 		
 	}
 	
@@ -132,31 +130,8 @@ class CrudBaseController{
 				'authority_level'=>0, // 権限レベル(権限が強いほど大きな数値）
 		];
 		
-		//■■■□□□■■■□□□
-// 		if(\Auth::id()){// idは未ログインである場合、nullになる。
-// 			$userInfo['id'] = \Auth::id(); // ユーザーID
-// 			$userInfo['user_id'] = $userInfo['id'];
-// 			$userInfo['name'] = \Auth::user()->name; // ユーザー名
-// 			$userInfo['username'] = $userInfo['name'] ;
-// 			$userInfo['user_name'] = $userInfo['name'];
-// 			$userInfo['update_user'] = $userInfo['name'];
-// 			$userInfo['email'] = \Auth::user()->email; // メールアドレス
-// 			$userInfo['role'] = \Auth::user()->role; // 権限
-// 			$userInfo['nickname'] = \Auth::user()->nickname ?? $userInfo['name']; // ニックネーム
-			
-// 		}
-		
 		$userInfo['ip_addr'] = $_SERVER["REMOTE_ADDR"];// IPアドレス
 		$userInfo['user_agent'] = $_SERVER['HTTP_USER_AGENT']; // ユーザーエージェント
-		
-		//■■■□□□■■■□□□
-// 		if(!empty($userInfo['id'])){
-// 			$users = \DB::select("SELECT * FROM users WHERE id={$userInfo['id']}");
-// 			$users = $users[0];
-// 			$userInfo['role'] = $users->role;
-// 			$userInfo['delete_flg'] = $users->delete_flg;
-			
-// 		}
 		
 		// 権限が空であるならオペレータ扱いにする
 		if(empty($userInfo['role'])){
@@ -421,12 +396,14 @@ class CrudBaseController{
 	 */
 	public function getDbFieldData($tbl_name){
 		
-		$dbFieldData0 = $this->getFieldDataFromDb($tbl_name);
-		$dbFieldData = [];
-		foreach($dbFieldData0 as $ent){
-			$field = $ent->Field;
-			$dbFieldData[$field] = (array)$ent;
-		}
+		$dbFieldData = $this->getFieldDataFromDb($tbl_name);
+		
+		// ■■■□□□■■■□□□
+// 		$dbFieldData = [];
+// 		foreach($dbFieldData0 as $ent){
+// 			$field = $ent->Field;
+// 			$dbFieldData[$field] = (array)$ent;
+// 		}
 		
 		// 型長とデータ型を取得する
 		foreach($dbFieldData as &$fEnt){
@@ -482,7 +459,7 @@ class CrudBaseController{
 	 */
 	private function getFieldDataFromDb($tbl_name){
 		$sql="SHOW FULL COLUMNS FROM {$tbl_name}";
-		$res = DB::select($sql);
+		$res = $this->query($sql);
 		
 		return $res;
 	}

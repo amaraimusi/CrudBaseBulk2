@@ -24,7 +24,6 @@ class NekoController extends CrudBaseController {
 		
 		$request = new Request();
 
-		//$sesSearches = $_SESSION['neko_searches_key'] ?? [];■■■□□□■■■□□□
 		$sesSearches = $this->getFromSession('neko_searches_key'); // セッションからセッション検索データを受け取る
 		if($sesSearches == null ) $sesSearches = [];
 		
@@ -76,14 +75,12 @@ class NekoController extends CrudBaseController {
 		
 		$searches['this_page_version'] = $this->this_page_version; // 画面バージョン
 		$searches['new_version'] = $new_version; // 新バージョンフラグ
-		//$_SESSION['neko_searches_key'] = $searches; ■■■□□□■■■□□□
 		$this->setToSession('neko_searches_key', $searches); // セッションに検索データを書き込む
 		
 		$userInfo = $this->getUserInfo(); // ログインユーザーのユーザー情報を取得する
 		$paths = $this->getPaths(); // パス情報を取得する
 		
 		$csrf_token = $this->makeCsrfToken(); // CSRFトークンを発行する
-		//$_SESSION['neko_csrf_token'] = $csrf_token;■■■□□□■■■□□□
 		$this->setToSession('neko_csrf_token', $csrf_token);
 		
 		$model = new Neko();
@@ -148,26 +145,16 @@ class NekoController extends CrudBaseController {
 		
 		$json=$_POST['key1'];
 		$res = json_decode($json,true);
-		dump($res);//■■■□□□■■■□□□)
-		
-		//dump('■■■□□□■■■□□□');//■■■□□□■■■□□□)
-		//$this->getFromSession('neko_csrf_token');
-		
-		//■■■□□□■■■□□□
-// 		// ログアウトになっていたらログイン画面にリダイレクト
-// 		if(\Auth::id() == null) return redirect('login');
-		
 
+		$ent = $res['ent'];
 		
+		// IDフィールドです。 IDが空である場合、 新規入力アクションという扱いになります。なお、複製入力アクションは新規入力アクションに含まれます。
+		$id = !empty($ent['id']) ? $ent['id'] : null;
 		
+		// DBテーブルからDBフィールド情報を取得します。
+		$dbFieldData = $this->getDbFieldData('nekos');
 		
-// 		$ent = $res['ent'];
-		
-// 		// IDフィールドです。 IDが空である場合、 新規入力アクションという扱いになります。なお、複製入力アクションは新規入力アクションに含まれます。
-// 		$id = !empty($ent['id']) ? $ent['id'] : null;
-		
-// 		// DBテーブルからDBフィールド情報を取得します。
-// 		$dbFieldData = $this->getDbFieldData('nekos');
+		dump('$id＝' . $id);//■■■□□□■■■□□□)
 		
 // 		// 値が空であればデフォルトをセットします。
 // 		$ent = $this->setDefalutToEmpty($ent, $dbFieldData);

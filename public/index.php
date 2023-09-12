@@ -23,17 +23,25 @@ $method_name = $segments[4] ?? 'index'; // メソッド名を取得
 $model_name = camelize($class_name); // モデル名
 
 // 各種パスを環境データにセットする
-if(empty($g_env['url_path'])) $g_env['url_path'] = $url_path; // // 例→/CrudBaseBulk2/public/neko/index
-if(empty($g_env['main_path'])) $g_env['main_path'] = $main_path; // // 例→/CrudBaseBulk2/public
-if(empty($g_env['class_name'])) $g_env['class_name'] = $class_name; // // 例→neko
-if(empty($g_env['method_name'])) $g_env['method_name'] = $method_name; // // 例→index
-if(empty($g_env['model_name'])) $g_env['model_name'] = $model_name; // // 例→Neko
-if(empty($g_env['base_path'])) $g_env['base_path'] = $base_path; // // 例→C:\Users\user\git\CrudBaseBulk2
-if(empty($g_env['app_path'])) $g_env['app_path'] = $app_path; // // 例→C:\Users\user\git\CrudBaseBulk2\app
-if(empty($g_env['public_path'])) $g_env['public_path'] = $public_path; // // 例→C:\Users\user\git\CrudBaseBulk2\public
-
+if(empty($g_env['url_path'])) $g_env['url_path'] = $url_path; // 例→/CrudBaseBulk2/public/neko/index
+if(empty($g_env['main_path'])) $g_env['main_path'] = $main_path; // 例→/CrudBaseBulk2/public
+if(empty($g_env['class_name'])) $g_env['class_name'] = $class_name; // 例→neko
+if(empty($g_env['method_name'])) $g_env['method_name'] = $method_name; // 例→index
+if(empty($g_env['model_name'])) $g_env['model_name'] = $model_name; // 例→Neko
+if(empty($g_env['base_path'])) $g_env['base_path'] = $base_path; // 例→C:\Users\user\git\CrudBaseBulk2
+if(empty($g_env['app_path'])) $g_env['app_path'] = $app_path; // 例→C:\Users\user\git\CrudBaseBulk2\app
+if(empty($g_env['public_path'])) $g_env['public_path'] = $public_path; // 例→C:\Users\user\git\CrudBaseBulk2\public
 
 require_once $app_path . '\autoload.php';
+
+global $g_dao;
+$g_dao = new CrudBase\PdoDao([
+		'host' => $g_env['DB_HOST'], // ホスト名
+		'db_name' => $g_env['DB_NAME'], // データベース名
+		'user' => $g_env['DB_USER'], // DBユーザー名
+		'pw' => $g_env['DB_PASS'], // DBパスワード
+]);
+
 require_once $app_path . '\Controller/' . $model_name . 'Controller.php';
 $ctrl_class = 'App\\Controller\\' . $model_name . 'Controller';
 $ctrlObj = new $ctrl_class;
