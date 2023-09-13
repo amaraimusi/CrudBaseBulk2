@@ -22,11 +22,6 @@ class SaveData{
 	 * @param IDao $dao
 	 */
 	public function __construct(IDao $dao){
-		//■■■□□□■■■□□□
-// 		if($dao == null){
-// 			require_once 'PdoDao.php';
-// 			$dao = new PdoDao();
-// 		}
 		$this->dao = $dao;
 	}
 

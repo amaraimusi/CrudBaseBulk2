@@ -210,7 +210,7 @@ class CrudBaseHelper
      */
     public function tdImg($ent, $field){
 
-        $fp = $ent->$field ?? null;
+        $fp = $ent[$field] ?? null;
         
         if(empty($fp)){
             $none_fp = 'img/icon/none.gif';

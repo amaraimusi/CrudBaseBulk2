@@ -276,41 +276,42 @@ class Neko extends CrudBase
 	}
 	
 	
-	/**
-	 * エンティティのDB保存
-	 * @note エンティティのidが空ならINSERT, 空でないならUPDATEになる。
-	 * @param [] $ent エンティティ
-	 * @return [] エンティティ(insertされた場合、新idがセットされている）
-	 */
-	public function saveEntity(&$ent){
+// 	/**■■■□□□■■■□□□
+// 	 * エンティティのDB保存
+// 	 * @note エンティティのidが空ならINSERT, 空でないならUPDATEになる。
+// 	 * @param [] $ent エンティティ
+// 	 * @return [] エンティティ(insertされた場合、新idがセットされている）
+// 	 */
+// 	public function saveEntity(&$ent){
 		
-		if(empty($ent['id'])){
+// 		if(empty($ent['id'])){
 			
-			// ▽ idが空であればINSERTをする。
-			$ent = array_intersect_key($ent, array_flip($this->fillable)); // ホワイトリストによるフィルタリング
-			$id = $this->insertGetId($ent); // INSERT
-			$ent['id'] = $id;
-		}else{
+// 			// ▽ idが空であればINSERTをする。
+// 			$ent = array_intersect_key($ent, array_flip($this->fillable)); // ホワイトリストによるフィルタリング
+// 			$id = $this->insertGetId($ent); // INSERT
+// 			$ent['id'] = $id;
+// 		}else{
 			
-			// ▽ idが空でなければUPDATEする。
-			$ent = array_intersect_key($ent, array_flip($this->fillable)); // ホワイトリストによるフィルタリング
-			$this->updateOrCreate(['id'=>$ent['id']], $ent); // UPDATE
-		}
+// 			// ▽ idが空でなければUPDATEする。
+// 			$ent = array_intersect_key($ent, array_flip($this->fillable)); // ホワイトリストによるフィルタリング
+// 			$this->updateOrCreate(['id'=>$ent['id']], $ent); // UPDATE
+// 		}
 		
-		return $ent;
-	}
+// 		return $ent;
+// 	}
 	
 	
 	/**
 	 * データのDB保存
+	 * @param string $tbl_name テーブル名
 	 * @param [] $data データ（エンティティの配列）
 	 * @return [] データ(insertされた場合、新idがセットされている）
 	 */
-	public function saveAll(&$data){
+	public function saveAll($tbl_name, &$data){
 		
 		$data2 = [];
 		foreach($data as &$ent){
-			$data2[] = $this->saveEntity($ent);
+			$data2[] = $this->save($tbl_name, $ent);
 			
 		}
 		unset($ent);

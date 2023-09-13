@@ -184,13 +184,13 @@ class NekoController extends CrudBaseController {
 // 			$model->update(); // DB更新
 // 		}
 		
-// 		$ent = $model->toArray();
+		//$ent = $model->toArray();
 		
-// 		if(!empty($fRes['errs'])) $ent['errs'] = $fRes['errs'];
+		//if(!empty($fRes['errs'])) $ent['errs'] = $fRes['errs'];
 		
-// 		$json = json_encode($ent, JSON_HEX_TAG | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_APOS);
+		$json = json_encode($ent, JSON_HEX_TAG | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_APOS);
 		
-// 		return $json;
+		return $json;
 	}
 	
 	
