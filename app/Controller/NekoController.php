@@ -184,7 +184,7 @@ class NekoController extends CrudBaseController {
 		// ▼ ファイルアップロード関連
 		$fileUploadK = CrudBase::factoryFileUploadK();
 		$front_img_fn = $ent['img_fn'];
-		$exist_img_fn = $existEnt['img_fn'];
+		$exist_img_fn = $existEnt['img_fn'] ?? '';
 		$fRes = $fileUploadK->uploadForSpa('neko', $_FILES, $ent, 'img_fn', $front_img_fn, $exist_img_fn);
 		if($fRes['db_reg_flg']){
 			$ent['img_fn'] = $fRes['reg_fp'];
@@ -194,6 +194,50 @@ class NekoController extends CrudBaseController {
 		$json = json_encode($ent, JSON_HEX_TAG | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_APOS);
 		
 		return $json;
+	}
+	
+	
+	/**
+	 * 削除/削除取消アクション(無効/有効アクション）
+	 */
+	public function disabled(){
+		
+		// CSRFトークン（Cross-site Request Forgery）による正規のページからアクセスが行われていることを証明確認する。
+		if($this->getFromSession('neko_csrf_token') != $_POST['_token']){
+			echo '・セッションタイムアウト（時間切れ）です。もう一度やりなおしてください。<br>・正規ページからアクセスしていますか？';
+			die();
+		}
+		
+		$json=$_POST['key1'];
+		$res = json_decode($json,true);
+		
+		$userInfo = $this->getUserInfo(); // ログインユーザーのユーザー情報を取得する
+		
+		$json=$_POST['key1'];
+		
+		$param = json_decode($json,true);//JSON文字を配列に戻す
+		$id = $param['id'];
+		$action_flg =  $param['action_flg'];
+		
+		$ent = ['id' => $id];
+		
+		if(empty($action_flg)){
+			$ent['delete_flg'] = 0; // 削除フラグをOFFにする
+		}else{
+			$ent['delete_flg'] = 1; // 削除フラグをONにする
+		}
+		
+		$ent['update_user_id'] = $userInfo['id'];
+		$ent['ip_addr'] = $userInfo['ip_addr'];
+		$ent['updated_at'] = date('Y-m-d H:i:s');
+		
+		$model = new Neko();
+		$model->save('nekos', $ent);
+		
+		$res = ['success'];
+		$json_str = json_encode($res);//JSONに変換
+		
+		return $json_str;
 	}
 	
 	
