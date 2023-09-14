@@ -234,10 +234,14 @@ class CrudBase{
      * エンティティをDBの保存する。 idが存在すればUPDATE,　idが空であればINSERTになる。
      * @param string $tbl_name テーブル名
      * @param [] $ent エンティティ
-     * @return [] エンティティ（INSERTの場合はidがセットされている）
+	 * @return []
+	 *   - ent エンティティ(INSERTの場合、idがセットされる）
+	 *   - rEnt 処理結果エンティティ
+	 *   - err_msg エラーメッセージ
      */
     public function save($tbl_name, $ent){
-    	return $this->saveData->save($tbl_name, $ent);
+    	$res = $this->saveData->save($tbl_name, $ent);
+    	return $res['ent'];
     }
     
 

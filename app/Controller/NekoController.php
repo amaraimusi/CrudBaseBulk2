@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Model\Neko;
 use CrudBase\Request;
+use CrudBase\CrudBase;
 
 class NekoController extends CrudBaseController {
 	
@@ -159,6 +160,15 @@ class NekoController extends CrudBaseController {
 		
 		$model = new Neko();
 		
+		$existEnt = $model->getEntityById($id); // DB更新前のエンティティを既存エンティティとして取得する
+		
+		// エンティティに値未セットのフィールドがあれば、DBから取得した既存の値をセットする。
+		foreach($existEnt as $exist_key => $exist_value){
+			if (!array_key_exists($exist_key, $ent)) {
+				$ent[$exist_key] = $exist_value;
+			}
+		}
+		
  		$userInfo = $this->getUserInfo(); // ログインユーザーのユーザー情報を取得する
  		$ent['delete_flg'] = 0;
  		$ent['update_user_id'] = $userInfo['user_id'];
@@ -171,23 +181,16 @@ class NekoController extends CrudBaseController {
 
 		$ent = $model->save('nekos', $ent); // DBへ登録（INSERT、UPDATE兼用）
 		
-		
-		
-		
-// 		// ▼ ファイルアップロード関連
-// 		$fileUploadK = CrudBase::factoryFileUploadK();
-// 		$front_img_fn = $ent['img_fn'];
-// 		$exist_img_fn = $model->img_fn;
-// 		$fRes = $fileUploadK->uploadForSpa('neko', $_FILES, $ent, 'img_fn', $front_img_fn, $exist_img_fn);
-// 		if($fRes['db_reg_flg']){
-// 			$model->img_fn = $fRes['reg_fp'];
-// 			$model->update(); // DB更新
-// 		}
-		
-		//$ent = $model->toArray();
-		
-		//if(!empty($fRes['errs'])) $ent['errs'] = $fRes['errs'];
-		
+		// ▼ ファイルアップロード関連
+		$fileUploadK = CrudBase::factoryFileUploadK();
+		$front_img_fn = $ent['img_fn'];
+		$exist_img_fn = $existEnt['img_fn'];
+		$fRes = $fileUploadK->uploadForSpa('neko', $_FILES, $ent, 'img_fn', $front_img_fn, $exist_img_fn);
+		if($fRes['db_reg_flg']){
+			$ent['img_fn'] = $fRes['reg_fp'];
+			$ent = $model->save('nekos', $ent); // DBへ登録（INSERT、UPDATE兼用）
+		}
+
 		$json = json_encode($ent, JSON_HEX_TAG | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_APOS);
 		
 		return $json;

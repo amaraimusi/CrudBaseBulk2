@@ -2,8 +2,8 @@
 
 namespace App\Model;
 
- use App\Model\CrudBase;
- 
+use App\Model\CrudBase;
+
 
 class Neko extends CrudBase
 {
@@ -259,6 +259,20 @@ class Neko extends CrudBase
 		// CBBXE
 		
 		return $whereList;
+	}
+	
+	
+	/**
+	 * idに紐づくエンティティを取得する
+	 * @param int id
+	 * @return [] エンティティ
+	 */
+	public function getEntityById($id){
+		if(empty($id)) return [];
+		$sql = "SELECT * FROM nekos WHERE `id`={$id}";
+		$data = $this->query($sql);
+		if(empty($data)) return [];
+		return $data[0];
 	}
 	
 	

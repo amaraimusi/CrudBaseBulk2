@@ -477,18 +477,20 @@ class CrudBaseController{
 		if($order == 'asc'){
 			
 			$sql="SELECT  MAX(sort_no) AS next_sort_no FROM {$tbl_name};";
-			$res = DB::select($sql);
+			//$res = DB::select($sql);■■■□□□■■■□□□
+			$res = $this->query($sql);
 			
 			if($res){
-				$sort_no = $res[0]->next_sort_no;
+				$sort_no = $res[0]['next_sort_no'];
 				$sort_no++;
 			}
 		}else{
 			$sql="SELECT  MIN(sort_no) AS next_sort_no FROM {$tbl_name};";
-			$res = DB::select($sql);
+			//$res = DB::select($sql);■■■□□□■■■□□□
+			$res = $this->query($sql);
 			
 			if($res){
-				$sort_no = $res[0]->next_sort_no;
+				$sort_no = $res[0]['next_sort_no'];
 				$sort_no--;
 			}
 		}
