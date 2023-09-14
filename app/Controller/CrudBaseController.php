@@ -477,7 +477,6 @@ class CrudBaseController{
 		if($order == 'asc'){
 			
 			$sql="SELECT  MAX(sort_no) AS next_sort_no FROM {$tbl_name};";
-			//$res = DB::select($sql);■■■□□□■■■□□□
 			$res = $this->query($sql);
 			
 			if($res){
@@ -486,7 +485,6 @@ class CrudBaseController{
 			}
 		}else{
 			$sql="SELECT  MIN(sort_no) AS next_sort_no FROM {$tbl_name};";
-			//$res = DB::select($sql);■■■□□□■■■□□□
 			$res = $this->query($sql);
 			
 			if($res){

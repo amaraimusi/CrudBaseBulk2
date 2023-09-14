@@ -102,7 +102,7 @@ $debug_mode = $crudBaseData['debug_mode'];
 	</div>
 	
 	<div class="tool_btn_w">
-		<a href="neko/create" class="btn btn-success">新規登録・MPA型</a>
+		<button type="button" class="btn btn-success" onclick="clickCreateBtn();">新規登録</button>
 	</div>
 </div>
 

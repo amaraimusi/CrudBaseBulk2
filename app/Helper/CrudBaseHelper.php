@@ -458,6 +458,39 @@ class CrudBaseHelper
     
     
     /**
+     * 入力フォーム用のセレクトボックスを生成
+     * @param string $field フィールド
+     * @param [] $list
+     * @param string $empty
+     * @return string HTML
+     */
+    public function selectForInpForm($field, $list, $empty=null){
+    	
+    	$options = [];
+    	
+    	if(!empty($empty)){
+    		$options[] = "<option>{$empty}</option>";
+    	}
+    	
+    	foreach($list as $value => $name){
+    		$name = h($name);
+    		$options[] = "<option value='{$value}'>{$name}</option>";
+    	}
+    	
+    	$option_html = implode("\n", $options);
+    	
+    	$html = "
+	    	<select name='{$field}' class='form-control form-control-lg'>
+				{$option_html}
+	    	</select>
+		";
+    	
+    	return $html;
+
+    }
+    
+    
+    /**
      * CrudBase.jsまたは、関連スクリプト群の読み込み部分HTMLコードを作成する
      * @param string $mode モード 0:CrudBase.min.jsを読み込む   1:CrudBaseを構成するスクリプトを別個で読み込む
      * @param string $this_page_version バージョン

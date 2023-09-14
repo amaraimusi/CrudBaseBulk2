@@ -1,6 +1,6 @@
 
 
-<div id="form_spa" style="display:none">
+<div id="form_spa" >
 <div style="max-width:840px;margin: auto;">
 
 	<div class="row">
@@ -59,13 +59,7 @@
 	<div class="row mt-2">
 		<div class='col-md-2' >ネコ種別 </div>
 		<div class='col-md-10'>
-			<select name="neko_type" class="form-control form-control-lg">
-				@foreach ($nekoTypeList as $neko_type => $neko_type_name)
-					<option value="{{ $neko_type }}" @selected(old('neko_type', $searches['neko_type']) == $neko_type)>
-						{{ $neko_type_name }}
-					</option>
-				@endforeach
-			</select>
+			<?php echo $cbh->selectForInpForm('neko_type', $nekoTypeList, '- ネコ種別 -'); ?>
 		</div>
 	</div>
 

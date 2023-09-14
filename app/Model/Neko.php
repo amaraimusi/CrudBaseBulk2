@@ -275,19 +275,24 @@ class Neko extends CrudBase
 		return $data[0];
 	}
 	
-	
-	/**
-	 * 次の順番を取得する
-	 * @return int 順番
-	 */
-	public function nextSortNo(){
-		$query = DB::table('nekos')->selectRaw('MAX(sort_no) AS max_sort_no');
-		$res = $query->first();
-		$sort_no = $res->max_sort_no ?? 0;
-		$sort_no++;
+	//■■■□□□■■■□□□
+// 	/**
+// 	 * 次の順番を取得する
+// 	 * @return int 順番
+// 	 */
+// 	public function nextSortNo(){
+
+// 		$res = $this->query("SELECT MAX(sort_no) AS max_sort_no;");
 		
-		return $sort_no;
-	}
+// 		if(empty($res)){
+// 			return 0;
+// 		}
+		
+// 		$sort_no = $res[0]['max_sort_no'];;
+// 		$sort_no++;
+		
+// 		return $sort_no;
+// 	}
 	
 	
 // 	/**■■■□□□■■■□□□

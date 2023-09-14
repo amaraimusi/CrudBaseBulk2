@@ -114,6 +114,8 @@ $(()=>{
 	jqRegistMsg = $('.js_registering_msg'); // 登録成功メッセージ要素	←「登録中」、「登録しました」などのメッセージを表示する。
 	jqCreateMode = $('.js_create_mode'); // 新規入力モードのみ表示する要素
 	jqEditMode = $('.js_edit_mode'); // 編集モードのみ表示する要素
+	
+	jqForm.hide();
     
 });
 
