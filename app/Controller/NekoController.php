@@ -285,8 +285,7 @@ class NekoController extends CrudBaseController {
 		$json=$_POST['key1'];
 		
 		$data = json_decode($json,true);//JSON文字を配列に戻す
-		//dump($data);//■■■□□□■■■□□□)
-		
+
 		$model = new Neko();
 		$model->saveAll('nekos', $data);
 		
@@ -295,6 +294,50 @@ class NekoController extends CrudBaseController {
 		
 		return $json_str;
 	}
+	
+	
+	/**
+	 * AJAX | 一覧のチェックボックス複数選択による一括処理
+	 * @return string
+	 */
+	public function ajax_pwms(){
+		
+		// CSRFトークン（Cross-site Request Forgery）による正規のページからアクセスが行われていることを証明確認する。
+		if($this->getFromSession('neko_csrf_token') != $_POST['_token']){
+			echo '・セッションタイムアウト（時間切れ）です。もう一度やりなおしてください。<br>・正規ページからアクセスしていますか？';
+			die();
+		}
+		
+		$json_param=$_POST['key1'];
+		
+		$param=json_decode($json_param,true);//JSON文字を配列に戻す
+		
+		// IDリストを取得する
+		$ids = $param['ids'];
+		
+		// アクション種別を取得する
+		$kind_no = $param['kind_no'];
+		
+		// ユーザー情報を取得する
+		$userInfo = $this->getUserInfo();
+		
+		$model = new Neko();
+		
+		// アクション種別ごとに処理を分岐
+		switch ($kind_no){
+			case 10:
+				$model->switchDeleteFlg($ids, 0, $userInfo); // 有効化
+				break;
+			case 11:
+				$model->switchDeleteFlg($ids, 1 ,$userInfo); // 削除化(無効化）
+				break;
+			default:
+				return "'kind_no' is unknown value";
+		}
+		
+		return 'success';
+	}
+	
 	
 	
 

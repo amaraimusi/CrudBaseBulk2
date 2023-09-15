@@ -166,6 +166,8 @@ $debug_mode = $crudBaseData['debug_mode'];
 	</tbody>
 </table>
 
+<?php $cbh->divPwms($searches['delete_flg']); // 複数有効/削除の区分を表示する ?>
+
 <?php echo $cbh->pagenation(); // ページネーション ?>
 
 

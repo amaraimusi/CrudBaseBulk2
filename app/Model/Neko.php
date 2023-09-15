@@ -361,7 +361,7 @@ class Neko extends CrudBase
 		$data = $this->setCommonToData($data, $userInfo);
 
 		// データを更新する
-		$rs = $this->saveAll($data);
+		$rs = $this->saveAll('nekos', $data);
 		
 		return $rs;
 		
