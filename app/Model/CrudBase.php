@@ -244,5 +244,19 @@ class CrudBase{
     	return $res['ent'];
     }
     
+    
+    /**
+    * idを指定して抹消（データベースからDELETE）
+    * @param string $tbl_name
+    * @param int $id
+    */
+    public function destroy($tbl_name, $id){
+    	if(empty($id)) return;
+    	if(!is_numeric($id)) return;
+    	
+    	$sql = "DELETE FROM {$tbl_name} WHERE id = {$id}";
+    	return $this->query($sql);
+    }
+    
 
 }

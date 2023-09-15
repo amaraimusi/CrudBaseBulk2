@@ -241,6 +241,32 @@ class NekoController extends CrudBaseController {
 	}
 	
 	
+	/**
+	 * 抹消アクション(無効/有効アクション）
+	 */
+	public function destroy(){
+		
+		// CSRFトークン（Cross-site Request Forgery）による正規のページからアクセスが行われていることを証明確認する。
+		if($this->getFromSession('neko_csrf_token') != $_POST['_token']){
+			echo '・セッションタイムアウト（時間切れ）です。もう一度やりなおしてください。<br>・正規ページからアクセスしていますか？';
+			die();
+		}
+		
+		$json=$_POST['key1'];
+		
+		$param = json_decode($json,true);//JSON文字を配列に戻す
+		$id = $param['id'];
+
+		$model = new Neko();
+		$model->destroy('nekos', $id);// idを指定して抹消（データベースからDELETE）
+		
+		$res = ['success'];
+		$json_str = json_encode($res);//JSONに変換
+		
+		return $json_str;
+	}
+	
+	
 
 
 	
