@@ -267,6 +267,36 @@ class NekoController extends CrudBaseController {
 	}
 	
 	
+	/**
+	 * Ajax | ソート後の自動保存
+	 *
+	 * @note
+	 * バリデーション機能は備えていない
+	 *
+	 */
+	public function auto_save(){
+		
+		// CSRFトークン（Cross-site Request Forgery）による正規のページからアクセスが行われていることを証明確認する。
+		if($this->getFromSession('neko_csrf_token') != $_POST['_token']){
+			echo '・セッションタイムアウト（時間切れ）です。もう一度やりなおしてください。<br>・正規ページからアクセスしていますか？';
+			die();
+		}
+		
+		$json=$_POST['key1'];
+		
+		$data = json_decode($json,true);//JSON文字を配列に戻す
+		//dump($data);//■■■□□□■■■□□□)
+		
+		$model = new Neko();
+		$model->saveAll('nekos', $data);
+		
+		$res = ['success'];
+		$json_str = json_encode($res);//JSONに変換
+		
+		return $json_str;
+	}
+	
+	
 
 
 	

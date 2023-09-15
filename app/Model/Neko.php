@@ -320,22 +320,22 @@ class Neko extends CrudBase
 // 	}
 	
 	
-	/**
-	 * データのDB保存
-	 * @param string $tbl_name テーブル名
-	 * @param [] $data データ（エンティティの配列）
-	 * @return [] データ(insertされた場合、新idがセットされている）
-	 */
-	public function saveAll($tbl_name, &$data){
+// 	/**■■■□□□■■■□□□
+// 	 * データのDB保存
+// 	 * @param string $tbl_name テーブル名
+// 	 * @param [] $data データ（エンティティの配列）
+// 	 * @return [] データ(insertされた場合、新idがセットされている）
+// 	 */
+// 	public function saveAll($tbl_name, &$data){
 		
-		$data2 = [];
-		foreach($data as &$ent){
-			$data2[] = $this->save($tbl_name, $ent);
+// 		$data2 = [];
+// 		foreach($data as &$ent){
+// 			$data2[] = $this->save($tbl_name, $ent);
 			
-		}
-		unset($ent);
-		return $data2;
-	}
+// 		}
+// 		unset($ent);
+// 		return $data2;
+// 	}
 	
 	
 	/**

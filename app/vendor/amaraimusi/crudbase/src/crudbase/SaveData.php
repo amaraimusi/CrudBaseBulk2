@@ -3,9 +3,9 @@ namespace CrudBase;
 
 /**
  * データ保存クラス
- * @version 2.0.3
+ * @version 2.0.4
  * @author kenji uehara
- * @since 2019-11-6 | 2023-9-13
+ * @since 2019-11-6 | 2023-9-15
  * @license MIT
  *
  */
@@ -63,8 +63,9 @@ class SaveData{
 			
 			
 			$rEnt = [];
+			$id = $data[$i]['id'];
 			if($id == 0){
-				$rEnt['id'] = $data[$i]['id'];
+				$rEnt['id'] = $id;
 				$rEnt['exe_type'] = 'update';
 			}else{
 			    $id = $this->getValue('SELECT LAST_INSERT_ID()');

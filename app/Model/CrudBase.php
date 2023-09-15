@@ -230,6 +230,7 @@ class CrudBase{
     	return $this->dao;
     }
     
+    
     /**
      * エンティティをDBの保存する。 idが存在すればUPDATE,　idが空であればINSERTになる。
      * @param string $tbl_name テーブル名
@@ -242,6 +243,26 @@ class CrudBase{
     public function save($tbl_name, $ent){
     	$res = $this->saveData->save($tbl_name, $ent);
     	return $res['ent'];
+    }
+    
+    
+    /**
+     * データをDB保存する
+	 * 
+	 * @note
+	 * idフィールドが主キー、オートインクリメントであるテーブルが対象。
+	 * 1行でもDB登録に失敗すると一旦すべてロールバックする。
+	 * トランザクション制御が内部でなされている。idをレスポンスとして取得する仕様上、この制御ははずせず。
+	 * 
+	 * @param string $tbl_name テーブル名
+	 * @param array $data データ（エンティティ配列型）
+	 * @return array
+	 *   - rData 処理結果データ
+	 *   - err_msg エラーメッセージ
+	 */
+    public function saveAll($tbl_name, $data){
+    	$res = $this->saveData->saveAll($tbl_name, $data);
+    	return $res;
     }
     
     
