@@ -11,8 +11,10 @@ require_once $app_path . '\functions.php';
 global $g_env;
 $g_env = loadEnv($app_path . '\.env');
 
-
+$scheme_url = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http'; // URLスキーム
+$origin_url = $scheme_url . '://' . $_SERVER['HTTP_HOST']; // オリジン
 $url_path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+
 $segments = explode('/', $url_path);// '/'で区切る
 $sliced_segments = array_slice($segments, 0, 3);// 2番目の節までを取得
 $main_path = implode('/', $sliced_segments);// 配列を文字列に戻し、メインパスを作成
@@ -23,6 +25,8 @@ $method_name = $segments[4] ?? 'index'; // メソッド名を取得
 $model_name = camelize($class_name); // モデル名
 
 // 各種パスを環境データにセットする
+if(empty($g_env['scheme_url'])) $g_env['scheme_url'] = $scheme_url; // 例→http, https
+if(empty($g_env['origin_url'])) $g_env['origin_url'] = $origin_url; // 例→http://localhost, https://example
 if(empty($g_env['url_path'])) $g_env['url_path'] = $url_path; // 例→/CrudBaseBulk2/public/neko/index
 if(empty($g_env['main_path'])) $g_env['main_path'] = $main_path; // 例→/CrudBaseBulk2/public
 if(empty($g_env['class_name'])) $g_env['class_name'] = $class_name; // 例→neko

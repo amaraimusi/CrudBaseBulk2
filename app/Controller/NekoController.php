@@ -297,6 +297,58 @@ class NekoController extends CrudBaseController {
 	
 	
 	/**
+	 * CSVダウンロード
+	 *
+	 * 一覧画面のCSVダウンロードボタンを押したとき、一覧データをCSVファイルとしてダウンロードします。
+	 */
+	public function csv_download(){
+		
+		$searches = $this->getFromSession('neko_searches_key');// セッションからセッション検索データを受け取る
+		
+		$model = new Neko();
+		$res = $model->getData($searches, ['use_type'=>'csv'] );
+		$data = $res['data'];
+		
+		// データ件数が0件ならCSVダウンロードを中断し、一覧画面にリダイレクトする。
+		$count = count($data);
+		if($count == 0){
+			// リダイレクト
+			global $g_env;
+			$redirect_url = $g_env['origin_url'] . $g_env['public_url'] . '/neko';
+			header("Location: {$redirect_url}");
+			exit();
+		}
+
+		// ダブルクォートで値を囲む
+		foreach($data as &$ent){
+			foreach($ent as $field => $value){
+				if(mb_strpos($value,'"')!==false){
+					$value = str_replace('"', '""', $value);
+				}
+				$value = '"' . $value . '"';
+				$ent[$field] = $value;
+			}
+		}
+		unset($ent);
+		
+		//列名配列を取得
+		$clms=array_keys($data[0]);
+		
+		//データの先頭行に列名配列を挿入
+		array_unshift($data,$clms);
+		
+		//CSVファイル名を作成
+		$date = new \DateTime();
+		$strDate=$date->format("Y-m-d");
+		$fn='neko'.$strDate.'.csv';
+		
+		//CSVダウンロード
+		$this->csvOutput($fn, $data);
+		
+	}
+	
+	
+	/**
 	 * AJAX | 一覧のチェックボックス複数選択による一括処理
 	 * @return string
 	 */
