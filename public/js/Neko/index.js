@@ -62,6 +62,10 @@ $(()=>{
 		});
 	});
 	
+	// 年月による日付範囲入力【拡張】 | RangeYmEx.js
+	let rngYmEx = new RangeYmEx();
+	rngYmEx.init();
+	
 	// 新しいバージョンになった場合
 	if(searches.new_version == 1){
 		chs.reset(); // 列表示切替機能内のローカルストレージをクリア
@@ -105,6 +109,13 @@ $(()=>{
 	// 検索・日時リストギミック
 	let sdgCreatedAt = new SearchDatetimeGimmick('.sdg_created_at');
 	let sdgUpdatedAt = new SearchDatetimeGimmick('.sdg_updated_at');
+	
+	// 検索入力フォームのinput要素にEnterキー押下イベントを組み込む。
+	$('#searchForm input').keypress(function(e){
+		if(e.which==13){ // Enterキーである場合
+			searchAction(); // 検索アクション
+		}
+	});
 		
     
     jqMain =  $('main'); // メインコンテンツ

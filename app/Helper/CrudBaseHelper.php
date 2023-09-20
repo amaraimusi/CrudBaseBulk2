@@ -977,13 +977,38 @@ class CrudBaseHelper
      * 検索フォーム：テキスト
      * @param string $field フィールド
      * @param string $display_name 表示名
+     * @param [] $options
+     *     int $maxlength 最大入力文字数
+     *     string width 横幅の長さ（CSSによる幅指定。 例→200px)
+     *     string pattern バリデーションの正規表現
+     *     string err_msg エラーメッセージ（置換指定可）     例→「%display_nameはカタカナで入力してください」
+     *     string title ツールチップ
      * @param int $maxlength 最大入力文字数
      * @param string $pattern バリデーションの正規表現
      * @return string
      */
-    public function searchFormText($field, $display_name, $maxlength=2000, $width='20em', $pattern=''){
+    public function searchFormText($field, $display_name, $option = []){
     	
-    	$value = h($this->searches['id'] ?? '');
+    	$maxlength = $option['maxlength'] ?? 2000;
+    	$width = $option['width'] ?? '20em';
+    	$pattern = $option['pattern'] ?? '';
+    	$err_msg = $option['err_msg'] ?? '';
+    	$title = $option['title'] ?? '';
+    	
+    	// エラーメッセージの作成および加工処理。
+    	if(empty($err_msg)){
+    		$err_msg = "👈「%display_name」に入力エラーがあります。";
+    	}
+    	$err_msg = str_replace('%display_name', $display_name, $err_msg);
+    	
+    	// ツールチップの作成および加工処理。
+    	if(empty($title)){
+    		$title = "「%display_name」で検索します。";
+    	}
+    	$title = str_replace('%display_name', $display_name, $title);
+
+    	
+    	$value = h($this->searches[$field] ?? '');
     	
     	if(!empty($pattern)){
     		$pattern = "pattern='{$pattern}'";
@@ -997,15 +1022,53 @@ class CrudBaseHelper
 					value='{$value}' 
 					class='form-control search_btn_x js_search_inp' 
 					maxlength = '{$maxlength}'
-					title='「{$display_name}」で検索します。' 
+					title='{$title}' 
 					style='width:{$width}' 
 					{$pattern}
 				>
-				<div class='searche_err text-danger' style='display:none'>「{$display_name}」に入力エラーがあります。</div>
+				<span class='searche_err text-danger' style='display:none'>{$err_msg}</span>
 			</div>
 		";
     	
     	return $html;
+    }
+    
+    
+    /**
+     * 検索フォーム： 月・日付範囲検索
+     *
+     * @param string $field フィールド
+     * @param string $display_name 表示名
+     * @param [] $options
+     *     int $maxlength 最大入力文字数
+     *     string width 横幅の長さ（CSSによる幅指定。 例→200px)
+     *     string pattern バリデーションの正規表現
+     *     string err_msg エラーメッセージ（置換指定可）     例→「%display_nameはカタカナで入力してください」
+     *     string title ツールチップ
+     * @param int $maxlength 最大入力文字数
+     * @param string $pattern バリデーションの正規表現
+     * @return string
+     */
+    public function searchFormDateRng($field, $display_name, $option = []){
+    	
+    	$maxlength = $option['maxlength'] ?? 2000;
+    	$width = $option['width'] ?? '20em';
+    	$pattern = $option['pattern'] ?? '';
+    	$err_msg = $option['err_msg'] ?? '';
+    	$title = $option['title'] ?? '';
+
+    	// 年月を取得
+    	$field_ym = $field . '_ym';
+    	$ym = $this->searches[$field_ym];
+    	
+    	$field1 = $field . '1';
+    	$date1 =  $this->searches[$field1];
+    	
+    	$field2 = $field . '2';
+    	$date2 =  $this->searches[$field2];
+    	
+    	return "<div id='{$field}' class='range_ym_ex' data-wamei='{$display_name}' data-def-ym='{$ym}' data-def1='{$date1}' data-def2='{$date2}' style='margin-right:40px;display:inline-block'></div>";
+    	
     }
     
     

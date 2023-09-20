@@ -211,9 +211,14 @@ class Neko extends CrudBase
 			$whereList[] = "nekos.`neko_type` = {$searches['neko_type']}";
 		}
 
-		// neko_dt
-		if(!empty($searches['neko_dt'])){
-			$whereList[] = "nekos.`neko_dt` = '{$searches['neko_dt']}'";
+		// ネコ日付・範囲1
+		if(!empty($searches['neko_date1'])){
+			$whereList[]="nekos.neko_date >= '{$searches['neko_date1']}'";
+		}
+		
+		// ネコ日付・範囲2
+		if(!empty($searches['neko_date2'])){
+			$whereList[]="nekos.neko_date <= '{$searches['neko_date2']}'";
 		}
 
 		// 画像ファイル名

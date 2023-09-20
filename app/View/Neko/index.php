@@ -48,13 +48,16 @@ $debug_mode = $crudBaseData['debug_mode'];
 
 <!-- 検索フォーム -->
 <form id="searchForm" method="GET" action="" >
-	<input type="search" placeholder="検索" name="main_search" value="<?php echo h($searches['main_search'] ?? ''); ?>" title="ネコ名、備考を部分検索します" class="form-control search_btn_x">
+	
+	<div><?php echo $cbh->searchFormText('main_search', '検索', ['title'=>'ネコ名、備考を部分検索します']); ?></div>
+	
 	<div style="display:inline-block;">
 		<div id="search_dtl_div" style="display:none;">
 
 			<div><?php echo $cbh->searchFormId(); ?></div>
-			<div><?php echo $cbh->searchFormText('neko_name', 'ネコ名', 64); ?></div>
-			<input type="search" placeholder="neko_date" name="neko_date" value="<?php echo h($searches['neko_date'] ?? ''); ?>" class="form-control search_btn_x">
+			<div><?php echo $cbh->searchFormText('neko_name', 'ネコ名', ['pattern'=>'[\u30A1-\u30FF]+', 'err_msg'=>'👈%display_nameはカタカナのみ入力可能です。']); ?></div>
+			<div><?php echo $cbh->searchFormDateRng('neko_date', 'ネコ日付'); ?></div>
+			
 			<?php $cbh->selectX('neko_type', $searches['neko_type'], $nekoTypeList, null,  '- ネコ種別 -');  ?>
 			<input type="search" placeholder="neko_dt" name="neko_dt" value="<?php echo h($searches['neko_dt'] ?? ''); ?>" class="form-control search_btn_x">
 			<input type="search" placeholder="ネコフラグ" name="neko_flg" value="<?php echo h($searches['neko_flg'] ?? ''); ?>" class="form-control search_btn_x">
