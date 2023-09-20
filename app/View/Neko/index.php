@@ -57,8 +57,7 @@ $debug_mode = $crudBaseData['debug_mode'];
 			<div><?php echo $cbh->searchFormId(); ?></div>
 			<div><?php echo $cbh->searchFormText('neko_name', 'ネコ名', ['pattern'=>'[\u30A1-\u30FF]+', 'err_msg'=>'👈%display_nameはカタカナのみ入力可能です。']); ?></div>
 			<div><?php echo $cbh->searchFormDateRng('neko_date', 'ネコ日付'); ?></div>
-			
-			<?php $cbh->selectX('neko_type', $searches['neko_type'], $nekoTypeList, null,  '- ネコ種別 -');  ?>
+			<div><?php echo $cbh->searchFormSelect('neko_type', 'ネコ種別', $nekoTypeList); ?></div>
 			<input type="search" placeholder="neko_dt" name="neko_dt" value="<?php echo h($searches['neko_dt'] ?? ''); ?>" class="form-control search_btn_x">
 			<input type="search" placeholder="ネコフラグ" name="neko_flg" value="<?php echo h($searches['neko_flg'] ?? ''); ?>" class="form-control search_btn_x">
 			<input type="search" placeholder="画像ファイル名" name="img_fn" value="<?php echo h($searches['img_fn'] ?? ''); ?>" class="form-control search_btn_x">

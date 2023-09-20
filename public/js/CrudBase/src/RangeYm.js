@@ -1,8 +1,8 @@
 /**
  * 年月による日付範囲入力 | RangeYm.js
- * @date 2019-8-17 | 2021-5-28
+ * @date 2019-8-17 | 2023-9-21
  * @license MIT
- * @version 1.1.6
+ * @version 1.1.8
  */
 class RangeYm{
 	
@@ -199,12 +199,20 @@ class RangeYm{
 	 * @param jQuery tb 年月テキストボックス
 	 */
 	changeYmTb(tb){
+		
 		let ym = tb.val();
-		
+
 		let date1 = ym + '-01'; // 始め日付
+		if(ym == null || ym == ''){
+			date1 = '';
+		}
 		this.fromInp.val(date1);
+
+		let date2 = '';
+		if(date1 != ''){
+			date2 = this._getMonthEndDate(date1);
+		}
 		
-		let date2 = this._getMonthEndDate(date1);
 		this.toInp.val(date2);
 		
 	}

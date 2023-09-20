@@ -1039,24 +1039,13 @@ class CrudBaseHelper
      *
      * @param string $field フィールド
      * @param string $display_name 表示名
-     * @param [] $options
-     *     int $maxlength 最大入力文字数
-     *     string width 横幅の長さ（CSSによる幅指定。 例→200px)
-     *     string pattern バリデーションの正規表現
-     *     string err_msg エラーメッセージ（置換指定可）     例→「%display_nameはカタカナで入力してください」
-     *     string title ツールチップ
+     * @param [] $options 未使用
      * @param int $maxlength 最大入力文字数
      * @param string $pattern バリデーションの正規表現
      * @return string
      */
     public function searchFormDateRng($field, $display_name, $option = []){
     	
-    	$maxlength = $option['maxlength'] ?? 2000;
-    	$width = $option['width'] ?? '20em';
-    	$pattern = $option['pattern'] ?? '';
-    	$err_msg = $option['err_msg'] ?? '';
-    	$title = $option['title'] ?? '';
-
     	// 年月を取得
     	$field_ym = $field . '_ym';
     	$ym = $this->searches[$field_ym];
@@ -1069,6 +1058,65 @@ class CrudBaseHelper
     	
     	return "<div id='{$field}' class='range_ym_ex' data-wamei='{$display_name}' data-def-ym='{$ym}' data-def1='{$date1}' data-def2='{$date2}' style='margin-right:40px;display:inline-block'></div>";
     	
+    }
+    
+    
+    /**
+     * 検索フォーム：SELECT
+     * @param string $field フィールド
+     * @param string $display_name 表示名
+     * @param [] $list 選択リスト
+     * @param [] $options
+     *     string width 横幅の長さ（CSSによる幅指定。 例→200px)
+     *     string title ツールチップ
+     *     boolean not_empty_flg 空無フラグ 0:空選択あり（デフォ）, 1:空選択なし
+     * @param int $maxlength 最大入力文字数
+     * @param string $pattern バリデーションの正規表現
+     * @return string
+     */
+    public function searchFormSelect($field, $display_name, $list, $option = []){
+    	
+    	$width = $option['width'] ?? 'auto';
+    	$title = $option['title'] ?? '';
+    	$not_empty_flg = $option['not_empty_flg'] ?? false;
+    	
+    	// ツールチップの作成および加工処理。
+    	if(empty($title)){
+    		$title = "「%display_name」で検索します。";
+    	}
+    	$title = str_replace('%display_name', $display_name, $title);
+    	
+		$optionList = []; // 選択肢リスト
+		
+		// 空選択を選択肢リストに追加
+		if($not_empty_flg == false){
+			$optionList[] = "<option value=''> - {$display_name} - </option>";
+		}
+		
+		// 選択肢を作成する
+		$select_value = h($this->searches[$field] ?? '');
+		foreach($list as $value => $name){
+			$name = h($name);
+			
+			$selected = '';
+			if($value == $select_value) $selected = 'selected';
+			
+			$optionList[] = "<option value='{$value}' {$selected}>{$name}</option>";
+		}
+		
+		
+		$option_html = implode("\n", $optionList);
+    	
+    	$html = "
+			<div>
+				<span class='search_form_label' style='display:none'>{$display_name}</span>
+				<select name='{$field}' class='form-control js_search_inp' title='{$title}' style='width:{$width}'>
+					{$option_html}
+				</select>
+			</div>
+		";
+					
+		return $html;
     }
     
     
