@@ -3,6 +3,12 @@
 	font-size:1.2em;
 }
 
+#search_dtl_div{
+	display:flex;
+	justify-content:flex-start;
+	flex-wrap:wrap;
+}
+
 .search_btn_x{
 	display:inline-block;
 	width:20em;
@@ -33,3 +39,4 @@
 .page-link{
 	position:static;
 }
+

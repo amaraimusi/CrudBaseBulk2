@@ -95,6 +95,8 @@ class Neko extends CrudBase
 	 */
 	public function getData($searches, $param=[]){
 		
+		$searches = $this->sqlSanitizeW($searches);
+		
 		$use_type = $param['use_type'] ?? 'index';
 		$def_per_page = $param['def_per_page'] ?? 50;
 		

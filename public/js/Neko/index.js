@@ -398,8 +398,6 @@ function regAction(){
 	jqRegistMsg.html('登録中です...');
 	
 	// SPA型・登録アクション
-		console.log('■■■□□□■■■□□□');//■■■□□□■■■□□□
-	console.log(crudBaseData.paths.public_url);//■■■□□□■■■□□□
 	let ajax_url = crudBaseData.paths.public_url + '/neko/reg_action';
 	crudBase.regAction(ent, ajax_url, {
 		'callback': (param)=>{
@@ -452,5 +450,17 @@ function pwmsSwitchAll(checkbox){
 }
 
 
+/**
+ * 検索ボタンを押下
+ */
+function searchAction(){
+	
+	crudBase.searchAction({
+		'form_slt':'#searchForm',
+		'inp_slt':'.js_search_inp',
+		'page_no_field':'page',
+		
+	});
+}
 
 

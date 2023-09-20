@@ -47,14 +47,13 @@ $debug_mode = $crudBaseData['debug_mode'];
 <main>
 
 <!-- 検索フォーム -->
-<form method="GET" action="">
-		
+<form id="searchForm" method="GET" action="" >
 	<input type="search" placeholder="検索" name="main_search" value="<?php echo h($searches['main_search'] ?? ''); ?>" title="ネコ名、備考を部分検索します" class="form-control search_btn_x">
 	<div style="display:inline-block;">
 		<div id="search_dtl_div" style="display:none;">
 
-			<input type="search" placeholder="ID" name="id" value="<?php echo h($searches['id'] ?? ''); ?>" class="form-control search_btn_x">
-			<input type="search" placeholder="neko_name" name="neko_name" value="<?php echo h($searches['neko_name'] ?? ''); ?>" class="form-control search_btn_x">
+			<div><?php echo $cbh->searchFormId(); ?></div>
+			<div><?php echo $cbh->searchFormText('neko_name', 'ネコ名', 64); ?></div>
 			<input type="search" placeholder="neko_date" name="neko_date" value="<?php echo h($searches['neko_date'] ?? ''); ?>" class="form-control search_btn_x">
 			<?php $cbh->selectX('neko_type', $searches['neko_type'], $nekoTypeList, null,  '- ネコ種別 -');  ?>
 			<input type="search" placeholder="neko_dt" name="neko_dt" value="<?php echo h($searches['neko_dt'] ?? ''); ?>" class="form-control search_btn_x">
@@ -75,7 +74,7 @@ $debug_mode = $crudBaseData['debug_mode'];
 		</div>
 	</div>
 	<div style="display:inline-block;">
-		<button type="submit" class ="btn btn-outline-primary">検索</button>
+		<button type="button" onclick="searchAction();" class ="btn btn-outline-primary">検索</button>
 		<button type="button" class ="btn btn-outline-secondary" onclick="$('#search_dtl_div').toggle(300);">詳細</button>
 		<button type="button" class="btn btn-outline-secondary" onclick="clearA()">クリア</button>
 

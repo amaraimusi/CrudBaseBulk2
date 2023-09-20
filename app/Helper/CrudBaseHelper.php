@@ -950,55 +950,65 @@ class CrudBaseHelper
 
     	return $this->pagenationEx3->pagenation($page_no, $per_page, $total_count);
     	
-    	
-//     	'update_user' => $request->update_user, // 更新者
-//     	'page' => $request->sort, // ページ番号
-//     	'sort' => $request->sort, // 並びフィールド
-//     	'desc' => $request->desc, // 並び向き
-//     	'per_page' => $request->per_page, // 行制限数
-    	
-    	//■■■□□□■■■□□□
-//     	// 総ページ数を計算
-//     	$total_pages = ceil($total_count / $per_page);
-    	
-//     	// 開始ページと終了ページを計算
-//     	$start_page = max(1, $current_page - 2);
-//     	$end_page = min($total_pages, $current_page + 2);
-    	
-//     	// HTMLを生成
-//     	echo '<nav aria-label="Page navigation">';
-//     	echo '<ul class="pagination">';
-    	
-//     	// 「前へ」リンク
-//     	if ($current_page > 1) {
-//     		echo '<li class="page-item">';
-//     		echo '<a class="page-link" href="?page=' . ($current_page - 1) . '" aria-label="Previous">';
-//     		echo '<span aria-hidden="true">&laquo;</span>';
-//     		echo '</a>';
-//     		echo '</li>';
-//     	}
-    	
-//     	// 各ページへのリンク
-//     	for ($i = $start_page; $i <= $end_page; $i++) {
-//     		if ($i == $current_page) {
-//     			echo '<li class="page-item active"><span class="page-link">' . $i . '</span></li>';
-//     		} else {
-//     			echo '<li class="page-item"><a class="page-link" href="?page=' . $i . '">' . $i . '</a></li>';
-//     		}
-//     	}
-    	
-//     	// 「次へ」リンク
-//     	if ($current_page < $total_pages) {
-//     		echo '<li class="page-item">';
-//     		echo '<a class="page-link" href="?page=' . ($current_page + 1) . '" aria-label="Next">';
-//     		echo '<span aria-hidden="true">&raquo;</span>';
-//     		echo '</a>';
-//     		echo '</li>';
-//     	}
-    	
-//     	echo '</ul>';
-//     	echo '</nav>';
     }
+    
+    
+    /**
+     * 検索フォーム：ID
+     * @return string
+     */
+    public function searchFormId(){
+    	
+    	$value = h($this->searches['id']);
+    	
+    	$html = "
+			<div>
+				<span class='search_form_label' style='display:none'>ID</span>
+				<input type='search' placeholder='ID' name='id' value='{$value}' class='form-control search_btn_x js_search_inp' title='検索するIDを入力してください。' style='width:7em' pattern='^[0-9]+$'>
+				<span class='searche_err text-danger' style='display:none'>👈IDに入力エラーがあります。自然数で入力してください。</span>
+			</div>
+		";
+    	
+    	return $html;
+    }
+    
+    
+    /**
+     * 検索フォーム：テキスト
+     * @param string $field フィールド
+     * @param string $display_name 表示名
+     * @param int $maxlength 最大入力文字数
+     * @param string $pattern バリデーションの正規表現
+     * @return string
+     */
+    public function searchFormText($field, $display_name, $maxlength=2000, $width='20em', $pattern=''){
+    	
+    	$value = h($this->searches['id'] ?? '');
+    	
+    	if(!empty($pattern)){
+    		$pattern = "pattern='{$pattern}'";
+    	}
+    	
+    	$html = "
+			<div>
+				<span class='search_form_label' style='display:none'>{$display_name}</span>
+				<input type='search' placeholder='{$display_name}' 
+					name='{$field}' 
+					value='{$value}' 
+					class='form-control search_btn_x js_search_inp' 
+					maxlength = '{$maxlength}'
+					title='「{$display_name}」で検索します。' 
+					style='width:{$width}' 
+					{$pattern}
+				>
+				<div class='searche_err text-danger' style='display:none'>「{$display_name}」に入力エラーがあります。</div>
+			</div>
+		";
+    	
+    	return $html;
+    }
+    
+    
     
 
 }
