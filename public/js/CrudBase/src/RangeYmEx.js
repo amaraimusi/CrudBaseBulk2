@@ -5,9 +5,9 @@
  * @note
  * RangeYm.jsが必要。
  * 
- * @date 2019-8-17
+ * @date 2019-8-17 | 2023-9-21
  * @license MIT
- * @version 1.0.0
+ * @version 1.1.0
  */
 class RangeYmEx{
 	
@@ -25,7 +25,7 @@ class RangeYmEx{
 			// 各種属性を取得
 			let xid = elm.attr('id');
 			let field=elm.attr('data-field');
-			let wamei = elm.attr('data-wamei');
+			let display_name = elm.attr('data-display_name');
 			if(field == null) field = xid;
 			
 			// 「年月による日付範囲入力」オブジェクト
@@ -33,13 +33,13 @@ class RangeYmEx{
 			rngYm.init({
 				div_xid:elm,
 				field:field,
-				wamei:wamei,
+				display_name:display_name,
 			});
 
 			let box = {
 					elm:elm,
 					field:field,
-					wamei:wamei,
+					display_name:display_name,
 					rngYmObj:rngYm,
 					};
 			boxs[field] = box;

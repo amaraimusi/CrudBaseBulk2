@@ -58,7 +58,8 @@ $debug_mode = $crudBaseData['debug_mode'];
 			<div><?php echo $cbh->searchFormText('neko_name', 'ネコ名', ['pattern'=>'[\u30A1-\u30FF]+', 'err_msg'=>'👈%display_nameはカタカナのみ入力可能です。']); ?></div>
 			<div><?php echo $cbh->searchFormDateRng('neko_date', 'ネコ日付'); ?></div>
 			<div><?php echo $cbh->searchFormSelect('neko_type', 'ネコ種別', $nekoTypeList); ?></div>
-			<input type="search" placeholder="neko_dt" name="neko_dt" value="<?php echo h($searches['neko_dt'] ?? ''); ?>" class="form-control search_btn_x">
+			<div><?php echo $cbh->searchFormDatetime('neko_dt', 'ネコ日時'); ?></div>
+			
 			<input type="search" placeholder="ネコフラグ" name="neko_flg" value="<?php echo h($searches['neko_flg'] ?? ''); ?>" class="form-control search_btn_x">
 			<input type="search" placeholder="画像ファイル名" name="img_fn" value="<?php echo h($searches['img_fn'] ?? ''); ?>" class="form-control search_btn_x">
 			<input type="search" placeholder="備考" name="note" value="<?php echo h($searches['note'] ?? ''); ?>" class="form-control search_btn_x">
@@ -66,12 +67,12 @@ $debug_mode = $crudBaseData['debug_mode'];
 			<input type="search" placeholder="IPアドレス" name="ip_addr" value="<?php echo h($searches['ip_addr'] ?? ''); ?>" class="form-control search_btn_x">
 
 			<button type="button" class ="btn btn-outline-secondary" onclick="$('#search_dtl_div').toggle(300);">＜ 閉じる</button>
-			<?php echo $cbh->inputKjDeleteFlg(); ?>
+			<?php echo $cbh->searchFormDelete(); ?>
 			
 			<input type="search" placeholder="更新者" name="update_user" value="<?php echo h($searches['update_user'] ?? ''); ?>" class="form-control search_btn_x">
-			<?php echo $cbh->inputKjCreated(); ?>
-			<?php echo $cbh->inputKjModified(); ?>
-			<?php echo $cbh->inputKjLimit(); ?>
+			<?php echo $cbh->searchFormCreated(); ?>
+			<?php echo $cbh->searchFormUpdated(); ?>
+			<?php echo $cbh->searchFormLimit(); ?>
 
 		</div>
 	</div>

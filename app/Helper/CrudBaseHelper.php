@@ -39,7 +39,7 @@ class CrudBaseHelper
      * ソート機能付きのth要素を作成する
      * @return string
      */
-    public function sortLink(&$searches, $table_name, $field, $wamei)
+    public function sortLink(&$searches, $table_name, $field, $display_name)
     {
         
         $now_sort_field = $searches['sort'] ?? ''; // 現在のソートフィールドを取得
@@ -71,7 +71,7 @@ class CrudBaseHelper
         }
         
         $html = "
-			<a href='{$url}' data-field='{$field}'>{$arrow}{$wamei}</a>
+			<a href='{$url}' data-field='{$field}'>{$arrow}{$display_name}</a>
 		";
 
         return $html;
@@ -643,13 +643,197 @@ class CrudBaseHelper
     
     
     /**
+     * ページネーションを生成
+     * @param int $current_page 現在ページ
+     * @param int $per_page 制限行数
+     * @param int $total_count 全件数
+     */
+    public function pagenation(){
+    	
+    	$page_no = $this->searches['page'];
+    	$per_page = $this->searches['per_page'];
+    	$total_count = $this->crudBaseData['data_count'];
+
+    	return $this->pagenationEx3->pagenation($page_no, $per_page, $total_count);
+    	
+    }
+    
+    
+    /**
+     * 検索フォーム：ID
+     * @return string
+     */
+    public function searchFormId(){
+    	
+    	$value = h($this->searches['id']);
+    	
+    	$html = "
+			<div>
+				<span class='search_form_label' style='display:none'>ID</span>
+				<input type='search' placeholder='ID' name='id' value='{$value}' class='form-control search_btn_x js_search_inp' title='検索するIDを入力してください。' style='width:7em' pattern='^[0-9]+$'>
+				<span class='searche_err text-danger' style='display:none'>👈IDに入力エラーがあります。自然数で入力してください。</span>
+			</div>
+		";
+    	
+    	return $html;
+    }
+    
+    
+    /**
+     * 検索フォーム：テキスト
+     * @param string $field フィールド
+     * @param string $display_name 表示名
+     * @param [] $options
+     *     int $maxlength 最大入力文字数
+     *     string width 横幅の長さ（CSSによる幅指定。 例→200px)
+     *     string pattern バリデーションの正規表現
+     *     string err_msg エラーメッセージ（置換指定可）     例→「%display_nameはカタカナで入力してください」
+     *     string title ツールチップ
+     * @param int $maxlength 最大入力文字数
+     * @param string $pattern バリデーションの正規表現
+     * @return string
+     */
+    public function searchFormText($field, $display_name, $option = []){
+    	
+    	$maxlength = $option['maxlength'] ?? 2000;
+    	$width = $option['width'] ?? '20em';
+    	$pattern = $option['pattern'] ?? '';
+    	$err_msg = $option['err_msg'] ?? '';
+    	$title = $option['title'] ?? '';
+    	
+    	// エラーメッセージの作成および加工処理。
+    	if(empty($err_msg)){
+    		$err_msg = "👈「%display_name」に入力エラーがあります。";
+    	}
+    	$err_msg = str_replace('%display_name', $display_name, $err_msg);
+    	
+    	// ツールチップの作成および加工処理。
+    	if(empty($title)){
+    		$title = "「%display_name」で検索します。";
+    	}
+    	$title = str_replace('%display_name', $display_name, $title);
+
+    	
+    	$value = h($this->searches[$field] ?? '');
+    	
+    	if(!empty($pattern)){
+    		$pattern = "pattern='{$pattern}'";
+    	}
+    	
+    	$html = "
+			<div>
+				<span class='search_form_label' style='display:none'>{$display_name}</span>
+				<input type='search' placeholder='{$display_name}' 
+					name='{$field}' 
+					value='{$value}' 
+					class='form-control search_btn_x js_search_inp' 
+					maxlength = '{$maxlength}'
+					title='{$title}' 
+					style='width:{$width}' 
+					{$pattern}
+				>
+				<span class='searche_err text-danger' style='display:none'>{$err_msg}</span>
+			</div>
+		";
+    	
+    	return $html;
+    }
+    
+    
+    /**
+     * 検索フォーム： 月・日付範囲検索
+     *
+     * @param string $field フィールド
+     * @param string $display_name 表示名
+     * @param [] $options 未使用
+     * @param int $maxlength 最大入力文字数
+     * @param string $pattern バリデーションの正規表現
+     * @return string
+     */
+    public function searchFormDateRng($field, $display_name, $option = []){
+    	
+    	// 年月を取得
+    	$field_ym = $field . '_ym';
+    	$ym = $this->searches[$field_ym];
+    	
+    	$field1 = $field . '1';
+    	$date1 =  $this->searches[$field1];
+    	
+    	$field2 = $field . '2';
+    	$date2 =  $this->searches[$field2];
+    	
+    	return "<div id='{$field}' class='range_ym_ex' data-display_name='{$display_name}' data-def-ym='{$ym}' data-def1='{$date1}' data-def2='{$date2}' style='margin-right:40px;display:inline-block'></div>";
+    	
+    }
+    
+    
+    /**
+     * 検索フォーム：SELECT
+     * @param string $field フィールド
+     * @param string $display_name 表示名
+     * @param [] $list 選択リスト
+     * @param [] $options
+     *     string width 横幅の長さ（CSSによる幅指定。 例→200px)
+     *     string title ツールチップ
+     *     boolean not_empty_flg 空無フラグ 0:空選択あり（デフォ）, 1:空選択なし
+     * @param int $maxlength 最大入力文字数
+     * @param string $pattern バリデーションの正規表現
+     * @return string
+     */
+    public function searchFormSelect($field, $display_name, $list, $option = []){
+    	
+    	$width = $option['width'] ?? 'auto';
+    	$title = $option['title'] ?? '';
+    	$not_empty_flg = $option['not_empty_flg'] ?? false;
+    	
+    	// ツールチップの作成および加工処理。
+    	if(empty($title)){
+    		$title = "「%display_name」で検索します。";
+    	}
+    	$title = str_replace('%display_name', $display_name, $title);
+    	
+		$optionList = []; // 選択肢リスト
+		
+		// 空選択を選択肢リストに追加
+		if($not_empty_flg == false){
+			$optionList[] = "<option value=''> - {$display_name} - </option>";
+		}
+		
+		// 選択肢を作成する
+		$select_value = h($this->searches[$field] ?? '');
+		foreach($list as $value => $name){
+			$name = h($name);
+			
+			$selected = '';
+			if($value == $select_value) $selected = 'selected';
+			
+			$optionList[] = "<option value='{$value}' {$selected}>{$name}</option>";
+		}
+		
+		
+		$option_html = implode("\n", $optionList);
+    	
+    	$html = "
+			<div>
+				<span class='search_form_label' style='display:none'>{$display_name}</span>
+				<select name='{$field}' class='form-control js_search_inp' title='{$title}' style='width:{$width}'>
+					{$option_html}
+				</select>
+			</div>
+		";
+					
+		return $html;
+    }
+    
+    
+    /**
      *
      * 検索用の浮動小数範囲入力フォームを生成
      *
      * @param string $field フィールド名（ kj_ を付けないこと）
-     * @param string $wamei フィールド和名
+     * @param string $display_name フィールド表示名
      */
-    public function inputKjDoubleRange($field, $wamei, $option=[]){
+    public function inputKjDoubleRange($field, $display_name, $option=[]){
     	
     	$kj_field1 = "kj_{$field}1";
     	$kj_field2 = "kj_{$field}2";
@@ -661,7 +845,7 @@ class CrudBaseHelper
     	if(!empty($option['width'])){
     		$width = $option['width'];
     	}else{
-    		$str_len = mb_strlen($wamei) + 1;
+    		$str_len = mb_strlen($display_name) + 1;
     		$str_len += 3;
     		if($str_len < 4) $str_len = 4;
     		$width = $str_len . 'em';
@@ -672,14 +856,14 @@ class CrudBaseHelper
 			<div class='kj_div'>
 				<div class='input number' style='display:inline-block'>
 					<input name='data[Neko][kj_{$field}1]' id='kj_{$field}1' value='{$value1}'
-						class='kjs_inp form-control' placeholder='{$wamei}～' title='{$wamei}～'
+						class='kjs_inp form-control' placeholder='{$display_name}～' title='{$display_name}～'
 						type='text' style='width:{$width}' pattern=\"[0-9]+([\.,][0-9]+)?\" step='0.01' >
 						<span id='kj_{$field}1_err' class='text-danger'></span>
 				</div>
 				<span>～</span>
 				<div class='input number' style='display:inline-block'>
 					<input name='data[Neko][kj_{$field}2]' id='kj_{$field}2' value='{$value2}'
-						class='kjs_inp form-control' placeholder='～{$wamei}' title='～{$wamei}'
+						class='kjs_inp form-control' placeholder='～{$display_name}' title='～{$display_name}'
 						type='text' style='width:{$width}' pattern=\"[0-9]+([\.,][0-9]+)?\" step='0.01' >
 					<span id='kj_{$field}2_err' class='text-danger'></span>
 				</div>
@@ -692,41 +876,43 @@ class CrudBaseHelper
     /**
      * 検索用の生成日時セレクトフォームを作成
      */
-    public function inputKjCreated($field='created_at', $wamei='生成日時'){
+    public function searchFormCreated($field='created_at', $display_name='生成日時'){
     	
-    	return $this->inputKjDateTimeA($field, $wamei);
+    	return $this->searchFormDatetime($field, $display_name);
     }
     
     
     /**
      * 検索用の更新日時セレクトフォームを作成
      */
-    public function inputKjModified($field='updated_at', $wamei='更新日時'){
+    public function searchFormUpdated($field='updated_at', $display_name='更新日時'){
     	
-    	return $this->inputKjDateTimeA($field, $wamei);
+    	return $this->searchFormDatetime($field, $display_name);
     }
     
     
+    	
     /**
-     * 検索用の日時セレクトフォームを作成
+     * 検索フォーム：日時
      *
      * @param string $field フィールド名
-     * @param string $wamei フィールド和名
+     * @param string $display_name 表示名
      * @param string $list 選択肢リスト（省略可）
      * @param int $width 入力フォームの横幅（省略可）
      * @param string $title ツールチップメッセージ（省略可）
      * @param [] option
      */
-    public function inputKjDateTimeA($field, $wamei, $list=[], $width=200 ,$title=null, $option = []){
+    public function searchFormDatetime($field, $display_name, $option = []){
     	
-    	$width_style = '';
-    	if(!empty($width)) $width_style="width:{$width}px;";
+    	$width = $option['width'] ?? 'auto';
+    	$title = $option['title'] ?? '';
+    	$list = $option['list'] ?? [];
     	
-    	if($title===null) $title = $wamei . "で検索";
-
+    	if(empty($title)) $title = $display_name . "で範囲検索";
+    	
     	if(empty($list)) $list = $this->getDateTimeList();
     	
-    	$searches = $this->crudBaseData['searches'];
+    	$searches = $this->searches;
     	
     	$d1 = $searches[$field] ?? '';
     	$u1 = strtotime($d1);
@@ -744,19 +930,19 @@ class CrudBaseHelper
     		$name = h($name); // XSSサニタイズ
     		$options_str .= "<option value='{$d2}' $selected>{$name}</option>";
     	}
-
-		$msg = '';
-		if(!empty($d1)){
-			$msg = "検索対象 ～{$d1}";
-		}
-				
-		$parent_element_selector = "sdg_{$field}";
-				
-		$html = "
-			<div class='kj_div kj_wrap {$parent_element_selector}' data-field='{$field}' style='display:inline-block'>
+    	
+    	$msg = '';
+    	if(!empty($d1)){
+    		$msg = "検索対象 ～{$d1}";
+    	}
+    	
+    	$parent_element_selector = "sdg_{$field}";
+    	
+    	$html = "
+			<div class='{$parent_element_selector}' data-field='{$field}' style='display:inline-block'>
 				<div class='input select'>
-					<select name='{$field}' id='{$field}' style='{$width_style}' class='kjs_inp form-control sdg_select' title='{$title}'>
-						<option value=''>-- {$wamei} --</option>
+					<select name='{$field}' id='{$field}' style='width:{$width}' class='kjs_inp form-control sdg_select js_search_inp' title='{$title}'>
+						<option value=''>-- {$display_name} --</option>
 						{$options_str}
 					</select>
 				</div>
@@ -764,19 +950,19 @@ class CrudBaseHelper
 				<input type='hidden' class='sdg_value' value='{$d1}' >
 				
 			</div>";
-				
-		return $html;
-				
+						
+						return $html;
+						
     }
     
     
     /**
      * 検索入力フォーム：削除SELECTボックス
      * @param string $field フィールド
-     * @param string $wamei 和名
+     * @param string $display_name 表示名
      * @param array $option
      */
-    public function inputKjDeleteFlg($field = 'delete_flg', $wamei = '有効/削除', $option=[]){
+    public function searchFormDelete($field = 'delete_flg', $display_name = '有効/削除', $option=[]){
     	
     	$delete_flg = $this->searches[$field];
     	$selected_0 = '';
@@ -897,8 +1083,8 @@ class CrudBaseHelper
     /**
      * 検索用の表示件数セレクトを作成
      */
-    public function inputKjLimit(){
-
+    public function searchFormLimit(){
+    	
     	$list = [
     			'5' =>"5件表示",
     			'10' =>"10件表示",
@@ -931,192 +1117,8 @@ class CrudBaseHelper
 			</div>
 		";
 						
-		return $html;
+						return $html;
 						
-    }
-    
-    
-    /**
-     * ページネーションを生成
-     * @param int $current_page 現在ページ
-     * @param int $per_page 制限行数
-     * @param int $total_count 全件数
-     */
-    public function pagenation(){
-    	
-    	$page_no = $this->searches['page'];
-    	$per_page = $this->searches['per_page'];
-    	$total_count = $this->crudBaseData['data_count'];
-
-    	return $this->pagenationEx3->pagenation($page_no, $per_page, $total_count);
-    	
-    }
-    
-    
-    /**
-     * 検索フォーム：ID
-     * @return string
-     */
-    public function searchFormId(){
-    	
-    	$value = h($this->searches['id']);
-    	
-    	$html = "
-			<div>
-				<span class='search_form_label' style='display:none'>ID</span>
-				<input type='search' placeholder='ID' name='id' value='{$value}' class='form-control search_btn_x js_search_inp' title='検索するIDを入力してください。' style='width:7em' pattern='^[0-9]+$'>
-				<span class='searche_err text-danger' style='display:none'>👈IDに入力エラーがあります。自然数で入力してください。</span>
-			</div>
-		";
-    	
-    	return $html;
-    }
-    
-    
-    /**
-     * 検索フォーム：テキスト
-     * @param string $field フィールド
-     * @param string $display_name 表示名
-     * @param [] $options
-     *     int $maxlength 最大入力文字数
-     *     string width 横幅の長さ（CSSによる幅指定。 例→200px)
-     *     string pattern バリデーションの正規表現
-     *     string err_msg エラーメッセージ（置換指定可）     例→「%display_nameはカタカナで入力してください」
-     *     string title ツールチップ
-     * @param int $maxlength 最大入力文字数
-     * @param string $pattern バリデーションの正規表現
-     * @return string
-     */
-    public function searchFormText($field, $display_name, $option = []){
-    	
-    	$maxlength = $option['maxlength'] ?? 2000;
-    	$width = $option['width'] ?? '20em';
-    	$pattern = $option['pattern'] ?? '';
-    	$err_msg = $option['err_msg'] ?? '';
-    	$title = $option['title'] ?? '';
-    	
-    	// エラーメッセージの作成および加工処理。
-    	if(empty($err_msg)){
-    		$err_msg = "👈「%display_name」に入力エラーがあります。";
-    	}
-    	$err_msg = str_replace('%display_name', $display_name, $err_msg);
-    	
-    	// ツールチップの作成および加工処理。
-    	if(empty($title)){
-    		$title = "「%display_name」で検索します。";
-    	}
-    	$title = str_replace('%display_name', $display_name, $title);
-
-    	
-    	$value = h($this->searches[$field] ?? '');
-    	
-    	if(!empty($pattern)){
-    		$pattern = "pattern='{$pattern}'";
-    	}
-    	
-    	$html = "
-			<div>
-				<span class='search_form_label' style='display:none'>{$display_name}</span>
-				<input type='search' placeholder='{$display_name}' 
-					name='{$field}' 
-					value='{$value}' 
-					class='form-control search_btn_x js_search_inp' 
-					maxlength = '{$maxlength}'
-					title='{$title}' 
-					style='width:{$width}' 
-					{$pattern}
-				>
-				<span class='searche_err text-danger' style='display:none'>{$err_msg}</span>
-			</div>
-		";
-    	
-    	return $html;
-    }
-    
-    
-    /**
-     * 検索フォーム： 月・日付範囲検索
-     *
-     * @param string $field フィールド
-     * @param string $display_name 表示名
-     * @param [] $options 未使用
-     * @param int $maxlength 最大入力文字数
-     * @param string $pattern バリデーションの正規表現
-     * @return string
-     */
-    public function searchFormDateRng($field, $display_name, $option = []){
-    	
-    	// 年月を取得
-    	$field_ym = $field . '_ym';
-    	$ym = $this->searches[$field_ym];
-    	
-    	$field1 = $field . '1';
-    	$date1 =  $this->searches[$field1];
-    	
-    	$field2 = $field . '2';
-    	$date2 =  $this->searches[$field2];
-    	
-    	return "<div id='{$field}' class='range_ym_ex' data-wamei='{$display_name}' data-def-ym='{$ym}' data-def1='{$date1}' data-def2='{$date2}' style='margin-right:40px;display:inline-block'></div>";
-    	
-    }
-    
-    
-    /**
-     * 検索フォーム：SELECT
-     * @param string $field フィールド
-     * @param string $display_name 表示名
-     * @param [] $list 選択リスト
-     * @param [] $options
-     *     string width 横幅の長さ（CSSによる幅指定。 例→200px)
-     *     string title ツールチップ
-     *     boolean not_empty_flg 空無フラグ 0:空選択あり（デフォ）, 1:空選択なし
-     * @param int $maxlength 最大入力文字数
-     * @param string $pattern バリデーションの正規表現
-     * @return string
-     */
-    public function searchFormSelect($field, $display_name, $list, $option = []){
-    	
-    	$width = $option['width'] ?? 'auto';
-    	$title = $option['title'] ?? '';
-    	$not_empty_flg = $option['not_empty_flg'] ?? false;
-    	
-    	// ツールチップの作成および加工処理。
-    	if(empty($title)){
-    		$title = "「%display_name」で検索します。";
-    	}
-    	$title = str_replace('%display_name', $display_name, $title);
-    	
-		$optionList = []; // 選択肢リスト
-		
-		// 空選択を選択肢リストに追加
-		if($not_empty_flg == false){
-			$optionList[] = "<option value=''> - {$display_name} - </option>";
-		}
-		
-		// 選択肢を作成する
-		$select_value = h($this->searches[$field] ?? '');
-		foreach($list as $value => $name){
-			$name = h($name);
-			
-			$selected = '';
-			if($value == $select_value) $selected = 'selected';
-			
-			$optionList[] = "<option value='{$value}' {$selected}>{$name}</option>";
-		}
-		
-		
-		$option_html = implode("\n", $optionList);
-    	
-    	$html = "
-			<div>
-				<span class='search_form_label' style='display:none'>{$display_name}</span>
-				<select name='{$field}' class='form-control js_search_inp' title='{$title}' style='width:{$width}'>
-					{$option_html}
-				</select>
-			</div>
-		";
-					
-		return $html;
     }
     
     

@@ -2,7 +2,7 @@
  * 年月による日付範囲入力 | RangeYm.js
  * @date 2019-8-17 | 2023-9-21
  * @license MIT
- * @version 1.1.8
+ * @version 1.2.0
  */
 class RangeYm{
 	
@@ -12,7 +12,7 @@ class RangeYm{
 	 * @param param
 	 * - div_xid 当機能埋込先区分のid属性
 	 * - field フィールド名
-	 * - wamei 和名
+	 * - display_name 表示名
 	 * - field_from 始め日付のフィールド名
 	 * - field_to 終わり日付のフィールド名
 	 */
@@ -63,7 +63,7 @@ class RangeYm{
 
 		if(param['div_xid'] == null) throw new Error('div_xid is empty');
 		if(param['field'] == null) throw new Error('field is empty');
-		if(param['wamei'] == null) throw new Error('wamei is empty');
+		if(param['display_name'] == null) throw new Error('display_name is empty');
 		if(param['field_from'] == null) param['field_from'] = param.field + '1';
 		if(param['field_to'] == null) param['field_to'] = param.field + '2';
 
@@ -100,17 +100,17 @@ class RangeYm{
 	_createHtml(){
 		
 		let field = this.param.field; // フィールド
-		let wamei = this.param.wamei; // 和名
+		let display_name = this.param.display_name; // 表示名
 		let field_from = this.param.field_from; // 始め日付のフィールド名
 		let field_to = this.param.field_to; // 終わり日付のフィールド名
 		
 		let html = `
-	<input type="month" id="${field}_ym" name="${field}_ym" class="range_ym_tb kjs_inp form-control js_search_inp"  placeholder="「${wamei}」の年月" title="年月を選択すると「>」ボタンの先にその月の日付範囲が入力されます。" style='display:inline-block;width:200px' />	
+	<input type="month" id="${field}_ym" name="${field}_ym" class="range_ym_tb kjs_inp form-control js_search_inp"  placeholder="「${display_name}」の年月" title="年月を選択すると「>」ボタンの先にその月の日付範囲が入力されます。" style='display:inline-block;width:200px' />	
 	<button type="button" class="range_ym_dtl_btn btn btn-secondary btn-secondary btn-sm" title="日付を範囲入力する部分を表示します。">
 		<span class='oi' data-glyph='arrow-thick-right'> </span>範囲</button>
 	<div class="range_ym_range_div" style="display:inline-block">
-		<input type="date" id="${field_from}" name="${field_from}" class="${field_from} kjs_inp range_ym_date_from form-control js_search_inp"  placeholder="「${wamei}」の範囲【始め】" title="「${wamei}」範囲の始め日付です。" style='display:inline-block;width:200px' />	
-		<input type="date" id="${field_to}" name="${field_to}" class="${field_to} kjs_inp range_ym_date_to form-control js_search_inp"  placeholder="「${wamei}」の範囲【終わり】" title="「${wamei}」範囲の終わり日付です。" style='display:inline-block;width:200px' />	
+		<input type="date" id="${field_from}" name="${field_from}" class="${field_from} kjs_inp range_ym_date_from form-control js_search_inp"  placeholder="「${display_name}」の範囲【始め】" title="「${display_name}」範囲の始め日付です。" style='display:inline-block;width:200px' />	
+		<input type="date" id="${field_to}" name="${field_to}" class="${field_to} kjs_inp range_ym_date_to form-control js_search_inp"  placeholder="「${display_name}」の範囲【終わり】" title="「${display_name}」範囲の終わり日付です。" style='display:inline-block;width:200px' />	
 		<div class="range_ym_err text-danger"></div>
 	</div>
 		`;
