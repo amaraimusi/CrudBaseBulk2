@@ -796,7 +796,7 @@ class CrudBaseHelper
 		
 		// 空選択を選択肢リストに追加
 		if($not_empty_flg == false){
-			$optionList[] = "<option value=''> - {$display_name} - </option>";
+			$optionList[] = "<option value=''> - {$display_name}(未選択) - </option>";
 		}
 		
 		// 選択肢を作成する
@@ -816,6 +816,70 @@ class CrudBaseHelper
     	$html = "
 			<div>
 				<span class='search_form_label' style='display:none'>{$display_name}</span>
+				<select name='{$field}' class='form-control js_search_inp' title='{$title}' style='width:{$width}'>
+					{$option_html}
+				</select>
+			</div>
+		";
+					
+		return $html;
+    }
+    
+    
+    /**
+     * 検索フォーム：フラグ
+     * @param string $field フィールド
+     * @param string $display_name 表示名
+     * @param [] $list 選択リスト
+     * @param [] $options
+     *     - [] list 選択肢リスト
+     *     - string width 横幅の長さ（CSSによる幅指定。 例→200px)
+     *     - string title ツールチップ
+     *     - boolean not_empty_flg 空無フラグ 0:空選択あり（デフォ）, 1:空選択なし
+     * @param int $maxlength 最大入力文字数
+     * @param string $pattern バリデーションの正規表現
+     * @return string
+     */
+    public function searchFormFlg($field, $display_name,  $option = []){
+    	
+    	$width = $option['width'] ?? 'auto';
+    	$title = $option['title'] ?? '';
+    	$not_empty_flg = $option['not_empty_flg'] ?? false;
+    	
+    	// ツールチップの作成および加工処理。
+    	if(empty($title)){
+    		$title = "「%display_name」で検索します。";
+    	}
+    	$title = str_replace('%display_name', $display_name, $title);
+    	
+    	$optionList = $option['list'] ?? []; // 選択肢リスト
+    	if(empty($optionList)){
+    		if($not_empty_flg == false){
+    			$optionList[-1] = " - {$display_name}(未選択) -";
+    		}
+    		$optionList[0] = 'OFF';
+    		$optionList[1] = 'ON';
+    	}
+    	
+    	// 選択肢を作成する
+    	$select_value = h($this->searches[$field] ?? '-1');
+    	foreach($optionList as $value => $name){
+
+    		$selected = '';
+    		if($value == $select_value) $selected = 'selected';
+    		
+    		$optionList[] = "<option value='{$value}' {$selected}>{$name}</option>";
+    	}
+    	
+    	$option_html = implode("\n", $optionList);
+    	
+    	// 未選択の選択肢が存在する場合はラベルを非表示。未選択の選択肢が存在する場合、ラベルを表示する。
+    	$label_display_style = '';
+    	if($not_empty_flg == false) $label_display_style = 'display:none;';
+    	
+    	$html = "
+			<div>
+				<span class='search_form_label' style='{$label_display_style}'>{$display_name}</span>
 				<select name='{$field}' class='form-control js_search_inp' title='{$title}' style='width:{$width}'>
 					{$option_html}
 				</select>
@@ -897,10 +961,10 @@ class CrudBaseHelper
      *
      * @param string $field フィールド名
      * @param string $display_name 表示名
-     * @param string $list 選択肢リスト（省略可）
-     * @param int $width 入力フォームの横幅（省略可）
-     * @param string $title ツールチップメッセージ（省略可）
-     * @param [] option
+     * @param [] $options 
+     *     - [] list 選択肢リスト
+     *     - string width 入力フォームの横幅
+     *     - string title ツールチップメッセージ
      */
     public function searchFormDatetime($field, $display_name, $option = []){
     	
@@ -942,7 +1006,7 @@ class CrudBaseHelper
 			<div class='{$parent_element_selector}' data-field='{$field}' style='display:inline-block'>
 				<div class='input select'>
 					<select name='{$field}' id='{$field}' style='width:{$width}' class='kjs_inp form-control sdg_select js_search_inp' title='{$title}'>
-						<option value=''>-- {$display_name} --</option>
+						<option value=''> - {$display_name}(未選択) - </option>
 						{$options_str}
 					</select>
 				</div>

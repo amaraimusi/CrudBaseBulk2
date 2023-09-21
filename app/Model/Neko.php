@@ -200,10 +200,15 @@ class Neko extends CrudBase
 		if(!empty($searches['neko_name'])){
 			$whereList[] = "nekos.`neko_name` LIKE '%{$searches['neko_name']}%'";
 		}
-
-		// neko_date
-		if(!empty($searches['neko_date'])){
-			$whereList[] = "nekos.`neko_date` = '{$searches['neko_date']}'";
+		
+		// ネコ日付・範囲1
+		if(!empty($searches['neko_date1'])){
+			$whereList[]="nekos.neko_date >= '{$searches['neko_date1']}'";
+		}
+		
+		// ネコ日付・範囲2
+		if(!empty($searches['neko_date2'])){
+			$whereList[]="nekos.neko_date <= '{$searches['neko_date2']}'";
 		}
 
 		// 猫種別
@@ -215,15 +220,12 @@ class Neko extends CrudBase
 		if(!empty($searches['neko_dt'])){
 			$whereList[] = "nekos.`neko_dt` >= '{$searches['neko_dt']}'";
 		}
-
-		// ネコ日付・範囲1
-		if(!empty($searches['neko_date1'])){
-			$whereList[]="nekos.neko_date >= '{$searches['neko_date1']}'";
-		}
 		
-		// ネコ日付・範囲2
-		if(!empty($searches['neko_date2'])){
-			$whereList[]="nekos.neko_date <= '{$searches['neko_date2']}'";
+		// ネコフラグ
+		if(!empty($searches['neko_flg']) || $searches['neko_flg'] ==='0' || $searches['neko_flg'] ===0){
+			if($searches['neko_flg'] != -1){
+				$whereList[]="nekos.neko_flg = {$searches['neko_flg']}";
+			}
 		}
 
 		// 画像ファイル名

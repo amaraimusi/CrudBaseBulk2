@@ -59,8 +59,8 @@ $debug_mode = $crudBaseData['debug_mode'];
 			<div><?php echo $cbh->searchFormDateRng('neko_date', 'ネコ日付'); ?></div>
 			<div><?php echo $cbh->searchFormSelect('neko_type', 'ネコ種別', $nekoTypeList); ?></div>
 			<div><?php echo $cbh->searchFormDatetime('neko_dt', 'ネコ日時'); ?></div>
+			<div><?php echo $cbh->searchFormFlg('neko_flg', 'ネコフラグ'); ?></div>
 			
-			<input type="search" placeholder="ネコフラグ" name="neko_flg" value="<?php echo h($searches['neko_flg'] ?? ''); ?>" class="form-control search_btn_x">
 			<input type="search" placeholder="画像ファイル名" name="img_fn" value="<?php echo h($searches['img_fn'] ?? ''); ?>" class="form-control search_btn_x">
 			<input type="search" placeholder="備考" name="note" value="<?php echo h($searches['note'] ?? ''); ?>" class="form-control search_btn_x">
 			<input type="search" placeholder="順番" name="sort_no" value="<?php echo h($searches['sort_no'] ?? ''); ?>" class="form-control search_btn_x">
