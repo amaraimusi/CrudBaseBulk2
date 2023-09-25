@@ -55,7 +55,11 @@ $debug_mode = $crudBaseData['debug_mode'];
 		<div id="search_dtl_div" style="display:none;">
 
 			<div><?php echo $cbh->searchFormId(); ?></div>
+			
+			
+			<div><?php echo $cbh->searchFormIntRange('neko_val', 'ネコ数値'); ?></div>
 			<div><?php echo $cbh->searchFormText('neko_name', 'ネコ名', ['pattern'=>'[\u30A1-\u30FF]+', 'err_msg'=>'👈%display_nameはカタカナのみ入力可能です。']); ?></div>
+			
 			<div><?php echo $cbh->searchFormDateRng('neko_date', 'ネコ日付'); ?></div>
 			<div><?php echo $cbh->searchFormSelect('neko_type', 'ネコ種別', $nekoTypeList); ?></div>
 			<div><?php echo $cbh->searchFormDatetime('neko_dt', 'ネコ日時'); ?></div>

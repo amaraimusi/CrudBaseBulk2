@@ -191,9 +191,14 @@ class Neko extends CrudBase
 			$whereList[] = "nekos.`id` = {$searches['id']}";
 		}
 
-		// neko_val
-		if(!empty($searches['neko_val'])){
-			$whereList[] = "nekos.`neko_val` = {$searches['neko_val']}";
+		// ネコ数値・範囲1
+		if(!empty($searches['neko_val1'])){
+			$whereList[] = "nekos.`neko_val` >= {$searches['neko_val1']}";
+		}
+		
+		// ネコ数値・範囲2
+		if(!empty($searches['neko_val2'])){
+			$whereList[] = "nekos.`neko_val` <= {$searches['neko_val2']}";
 		}
 
 		// neko_name

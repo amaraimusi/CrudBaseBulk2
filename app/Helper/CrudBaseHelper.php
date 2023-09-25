@@ -892,44 +892,135 @@ class CrudBaseHelper
     
     /**
      *
-     * 検索用の浮動小数範囲入力フォームを生成
+     * 検索フォーム:自然数入力フォームを生成
      *
      * @param string $field フィールド名（ kj_ を付けないこと）
      * @param string $display_name フィールド表示名
+     * @param [] $options
+     *     - int maxlength 入力文字数
+     *     - string width 横幅の長さ（CSSによる幅指定。 例→200px)
+     *     - string pattern バリデーションの正規表現
+     *     - string err_msg エラーメッセージ
+     *     - double step ステップ
      */
-    public function inputKjDoubleRange($field, $display_name, $option=[]){
+    public function searchFormIntRange($field, $display_name, $option=[]){
     	
-    	$kj_field1 = "kj_{$field}1";
-    	$kj_field2 = "kj_{$field}2";
-    	$value1 = $this->kjs[$kj_field1];
-    	$value2 = $this->kjs[$kj_field2];
+    	$maxlength = $option['maxlength'] ?? 64;
+    	$width = $option['width'] ?? '8em';
+    	$pattern = $option['pattern'] ?? '\d+';
+    	$err_msg = $option['err_msg'] ?? '';
+    	$step = $option['err_msg'] ?? 1;
     	
-    	// テキストの幅を自動指定する
-    	$width = '';
-    	if(!empty($option['width'])){
-    		$width = $option['width'];
-    	}else{
-    		$str_len = mb_strlen($display_name) + 1;
-    		$str_len += 3;
-    		if($str_len < 4) $str_len = 4;
-    		$width = $str_len . 'em';
-    		
+    	// エラーメッセージの作成および加工処理。
+    	if(empty($err_msg)){
+    		$err_msg = "%display_nameは自然数で入力してください。";
     	}
+    	$err_msg = str_replace('%display_name', $display_name, $err_msg);
+    	
+    	$field1 = "{$field}1";
+    	$field2 = "{$field}2";
+    	$value1 = h($this->searches[$field1]);
+    	$value2 = h($this->searches[$field2]);
     	
     	echo "
-			<div class='kj_div'>
-				<div class='input number' style='display:inline-block'>
-					<input name='data[Neko][kj_{$field}1]' id='kj_{$field}1' value='{$value1}'
-						class='kjs_inp form-control' placeholder='{$display_name}～' title='{$display_name}～'
-						type='text' style='width:{$width}' pattern=\"[0-9]+([\.,][0-9]+)?\" step='0.01' >
-						<span id='kj_{$field}1_err' class='text-danger'></span>
+			<div style='margin:0px 12px;'>
+				<div  style='display:inline-block'>
+					<input name='{$field1}'
+						value='{$value1}'
+						class='kjs_inp form-control js_search_inp'
+						placeholder='{$display_name}～'
+						title='{$display_name}～'
+						type='number'
+						style='width:{$width}'
+						pattern='{$pattern}'
+						step='{$step}'
+						maxlength = '{$maxlength}'
+						>
+						<span id='{$field}1_err' class='text-danger searche_err'  style='display:none' >{$err_msg}</span>
 				</div>
 				<span>～</span>
 				<div class='input number' style='display:inline-block'>
-					<input name='data[Neko][kj_{$field}2]' id='kj_{$field}2' value='{$value2}'
-						class='kjs_inp form-control' placeholder='～{$display_name}' title='～{$display_name}'
-						type='text' style='width:{$width}' pattern=\"[0-9]+([\.,][0-9]+)?\" step='0.01' >
-					<span id='kj_{$field}2_err' class='text-danger'></span>
+					<input name='{$field2}'
+						value='{$value2}'
+						class='kjs_inp form-control js_search_inp'
+						placeholder='～{$display_name}'
+						title='～{$display_name}'
+						type='number'
+						style='width:{$width}'
+						pattern='{$pattern}'
+						step='{$step}'
+						maxlength = '{$maxlength}'
+						>
+					<span id='{$field}2_err' class='text-danger searche_err' style='display:none'>{$err_msg}</span>
+				</div>
+			</div>
+		";
+    	
+    }
+    
+    
+    /**
+     *
+     * 検索フォーム:浮動小数範囲入力フォームを生成
+     *
+     * @param string $field フィールド名（ kj_ を付けないこと）
+     * @param string $display_name フィールド表示名
+     * @param [] $options
+     *     - int maxlength 入力文字数
+     *     - string width 横幅の長さ（CSSによる幅指定。 例→200px)
+     *     - string pattern バリデーションの正規表現
+     *     - string err_msg エラーメッセージ
+     *     - double step ステップ
+     */
+    public function searchFormDoubleRange($field, $display_name, $option=[]){
+    	
+    	$maxlength = $option['maxlength'] ?? 64;
+    	$width = $option['width'] ?? '8em';
+    	$pattern = $option['pattern'] ?? '[0-9]+([\.,][0-9]+)?';
+    	$err_msg = $option['err_msg'] ?? '';
+    	$step = $option['step'] ?? 0.01;
+
+    	// エラーメッセージの作成および加工処理。
+    	if(empty($err_msg)){
+    		$err_msg = "%display_nameは数値で入力してください。";
+    	}
+    	$err_msg = str_replace('%display_name', $display_name, $err_msg);
+
+    	$field1 = "{$field}1";
+    	$field2 = "{$field}2";
+    	$value1 = h($this->searches[$field1]);
+    	$value2 = h($this->searches[$field2]);
+    	
+    	echo "
+			<div style='margin:0px 12px;'>
+				<div  style='display:inline-block'>
+					<input name='{$field1}' 
+						value='{$value1}'
+						class='kjs_inp form-control js_search_inp' 
+						placeholder='{$display_name}～' 
+						title='{$display_name}～'
+						type='number' 
+						style='width:{$width}' 
+						pattern='{$pattern}' 
+						step='{$step}' 
+						maxlength = '{$maxlength}'
+						>
+						<span id='{$field}1_err' class='text-danger searche_err'  style='display:none' >{$err_msg}</span>
+				</div>
+				<span>～</span>
+				<div class='input number' style='display:inline-block'>
+					<input name='{$field2}' 
+						value='{$value2}'
+						class='kjs_inp form-control js_search_inp' 
+						placeholder='～{$display_name}' 
+						title='～{$display_name}'
+						type='number' 
+						style='width:{$width}' 
+						pattern='{$pattern}' 
+						step='{$step}' 
+						maxlength = '{$maxlength}'
+						>
+					<span id='{$field}2_err' class='text-danger searche_err' style='display:none'>{$err_msg}</span>
 				</div>
 			</div>
 		";

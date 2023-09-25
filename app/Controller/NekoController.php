@@ -45,7 +45,8 @@ class NekoController extends CrudBaseController {
 					
 					// CBBXS-3000
 					'id' => $request->id, // id
-					'neko_val' => $request->neko_val, // neko_val
+					'neko_val1' => $request->neko_val1, // ネコ数値・範囲1
+					'neko_val2' => $request->neko_val2, // ネコ数値・範囲2
 					'neko_name' => $request->neko_name, // neko_name
 					'neko_date_ym' => $request->neko_date_ym, // ネコ日付・年月
 					'neko_date1' => $request->neko_date1, // ネコ日付・範囲1
