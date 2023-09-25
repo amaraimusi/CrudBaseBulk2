@@ -66,18 +66,16 @@ $debug_mode = $crudBaseData['debug_mode'];
 			<div><?php echo $cbh->searchFormFlg('neko_flg', 'ネコフラグ'); ?></div>
 			<div><?php echo $cbh->searchFormText('img_fn', '画像ファイル名'); ?></div>
 			<div><?php echo $cbh->searchFormText('note', '備考'); ?></div>
-			
 			<div><?php echo $cbh->searchFormInt('sort_no', '順番'); ?></div>
-			<input type="search" placeholder="IPアドレス" name="ip_addr" value="<?php echo h($searches['ip_addr'] ?? ''); ?>" class="form-control search_btn_x">
-
-			<button type="button" class ="btn btn-outline-secondary" onclick="$('#search_dtl_div').toggle(300);">＜ 閉じる</button>
+			<div><?php echo $cbh->searchFormText('ip_addr', 'IPアドレス'); ?></div>
 			<?php echo $cbh->searchFormDelete(); ?>
-			
-			<input type="search" placeholder="更新者" name="update_user" value="<?php echo h($searches['update_user'] ?? ''); ?>" class="form-control search_btn_x">
+			<div><?php echo $cbh->searchFormText('update_user', '更新者'); ?></div>
 			<?php echo $cbh->searchFormCreated(); ?>
 			<?php echo $cbh->searchFormUpdated(); ?>
 			<?php echo $cbh->searchFormLimit(); ?>
 
+			<button type="button" class ="btn btn-outline-secondary" onclick="$('#search_dtl_div').toggle(300);">＜ 閉じる</button>
+			
 		</div>
 	</div>
 	<div style="display:inline-block;">
