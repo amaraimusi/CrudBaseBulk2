@@ -741,6 +741,67 @@ class CrudBaseHelper
     
     
     /**
+     * 検索フォーム：自然数
+     * @param string $field フィールド
+     * @param string $display_name 表示名
+     * @param [] $options
+     *     int $maxlength 最大入力文字数
+     *     string width 横幅の長さ（CSSによる幅指定。 例→200px)
+     *     string pattern バリデーションの正規表現
+     *     string err_msg エラーメッセージ（置換指定可）     例→「%display_nameはカタカナで入力してください」
+     *     string title ツールチップ
+     * @param int $maxlength 最大入力文字数
+     * @param string $pattern バリデーションの正規表現
+     * @return string
+     */
+    public function searchFormInt($field, $display_name, $option = []){
+    	
+    	$maxlength = $option['maxlength'] ?? 2000;
+    	$width = $option['width'] ?? '8em';
+    	$pattern = $option['pattern'] ?? '\d+';
+    	$err_msg = $option['err_msg'] ?? '';
+    	$title = $option['title'] ?? '';
+    	
+    	// エラーメッセージの作成および加工処理。
+    	if(empty($err_msg)){
+    		$err_msg = "👈「%display_name」に入力エラーがあります。";
+    	}
+    	$err_msg = str_replace('%display_name', $display_name, $err_msg);
+    	
+    	// ツールチップの作成および加工処理。
+    	if(empty($title)){
+    		$title = "「%display_name」で検索します。";
+    	}
+    	$title = str_replace('%display_name', $display_name, $title);
+    	
+    	
+    	$value = h($this->searches[$field] ?? '');
+    	
+    	if(!empty($pattern)){
+    		$pattern = "pattern='{$pattern}'";
+    	}
+    	
+    	$html = "
+			<div>
+				<span class='search_form_label' style='display:none'>{$display_name}</span>
+				<input type='number' placeholder='{$display_name}'
+					name='{$field}'
+					value='{$value}'
+					class='form-control search_btn_x js_search_inp'
+					maxlength = '{$maxlength}'
+					title='{$title}'
+					style='width:{$width}'
+					{$pattern}
+				>
+				<span class='searche_err text-danger' style='display:none'>{$err_msg}</span>
+			</div>
+		";
+					
+					return $html;
+    }
+    
+    
+    /**
      * 検索フォーム： 月・日付範囲検索
      *
      * @param string $field フィールド

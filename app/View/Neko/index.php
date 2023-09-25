@@ -64,10 +64,10 @@ $debug_mode = $crudBaseData['debug_mode'];
 			<div><?php echo $cbh->searchFormSelect('neko_type', 'ネコ種別', $nekoTypeList); ?></div>
 			<div><?php echo $cbh->searchFormDatetime('neko_dt', 'ネコ日時'); ?></div>
 			<div><?php echo $cbh->searchFormFlg('neko_flg', 'ネコフラグ'); ?></div>
+			<div><?php echo $cbh->searchFormText('img_fn', '画像ファイル名'); ?></div>
+			<div><?php echo $cbh->searchFormText('note', '備考'); ?></div>
 			
-			<input type="search" placeholder="画像ファイル名" name="img_fn" value="<?php echo h($searches['img_fn'] ?? ''); ?>" class="form-control search_btn_x">
-			<input type="search" placeholder="備考" name="note" value="<?php echo h($searches['note'] ?? ''); ?>" class="form-control search_btn_x">
-			<input type="search" placeholder="順番" name="sort_no" value="<?php echo h($searches['sort_no'] ?? ''); ?>" class="form-control search_btn_x">
+			<div><?php echo $cbh->searchFormInt('sort_no', '順番'); ?></div>
 			<input type="search" placeholder="IPアドレス" name="ip_addr" value="<?php echo h($searches['ip_addr'] ?? ''); ?>" class="form-control search_btn_x">
 
 			<button type="button" class ="btn btn-outline-secondary" onclick="$('#search_dtl_div').toggle(300);">＜ 閉じる</button>
