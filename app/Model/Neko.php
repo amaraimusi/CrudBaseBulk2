@@ -16,7 +16,7 @@ class Neko extends CrudBase
 	 * @var array<int, string>
 	 */
 	protected $fillable = [
-			// CBBXS-3009
+			// CBBXS-5009
 			'id',
 			'neko_val',
 			'neko_name',
@@ -48,7 +48,9 @@ class Neko extends CrudBase
 	 * @return [] $fieldData フィールドデータ
 	 */
 	public function getFieldData(){
+		
 		$fieldData = [
+				// CBBXS-5014
 				'id' => [], // ID
 				'neko_val' => [], // ネコ数値
 				'neko_name' => [], // ネコ名
@@ -73,6 +75,7 @@ class Neko extends CrudBase
 				'created_at' => [], // 生成日時
 				'updated_at' => [], // 更新日
 				'update_user' => [], // 更新者
+				// CBBXE
 		];
 		
 		// フィールドデータへＤＢからのフィールド詳細情報を追加
@@ -131,6 +134,7 @@ class Neko extends CrudBase
 
 		$sql = "
 			SELECT SQL_CALC_FOUND_ROWS 
+				/* CBBXS-5019 */
 				nekos.id as id,
 				nekos.neko_val as neko_val,
 				nekos.neko_name as neko_name,
@@ -147,6 +151,7 @@ class Neko extends CrudBase
 				nekos.ip_addr as ip_addr,
 				nekos.created_at as created_at,
 				nekos.updated_at as updated_at
+				/* CBBXE */
 			FROM
 				nekos 
 			LEFT JOIN users ON nekos.update_user_id = users.id
@@ -293,69 +298,6 @@ class Neko extends CrudBase
 		if(empty($data)) return [];
 		return $data[0];
 	}
-	
-	//■■■□□□■■■□□□
-// 	/**
-// 	 * 次の順番を取得する
-// 	 * @return int 順番
-// 	 */
-// 	public function nextSortNo(){
-
-// 		$res = $this->query("SELECT MAX(sort_no) AS max_sort_no;");
-		
-// 		if(empty($res)){
-// 			return 0;
-// 		}
-		
-// 		$sort_no = $res[0]['max_sort_no'];;
-// 		$sort_no++;
-		
-// 		return $sort_no;
-// 	}
-	
-	
-// 	/**■■■□□□■■■□□□
-// 	 * エンティティのDB保存
-// 	 * @note エンティティのidが空ならINSERT, 空でないならUPDATEになる。
-// 	 * @param [] $ent エンティティ
-// 	 * @return [] エンティティ(insertされた場合、新idがセットされている）
-// 	 */
-// 	public function saveEntity(&$ent){
-		
-// 		if(empty($ent['id'])){
-			
-// 			// ▽ idが空であればINSERTをする。
-// 			$ent = array_intersect_key($ent, array_flip($this->fillable)); // ホワイトリストによるフィルタリング
-// 			$id = $this->insertGetId($ent); // INSERT
-// 			$ent['id'] = $id;
-// 		}else{
-			
-// 			// ▽ idが空でなければUPDATEする。
-// 			$ent = array_intersect_key($ent, array_flip($this->fillable)); // ホワイトリストによるフィルタリング
-// 			$this->updateOrCreate(['id'=>$ent['id']], $ent); // UPDATE
-// 		}
-		
-// 		return $ent;
-// 	}
-	
-	
-// 	/**■■■□□□■■■□□□
-// 	 * データのDB保存
-// 	 * @param string $tbl_name テーブル名
-// 	 * @param [] $data データ（エンティティの配列）
-// 	 * @return [] データ(insertされた場合、新idがセットされている）
-// 	 */
-// 	public function saveAll($tbl_name, &$data){
-		
-// 		$data2 = [];
-// 		foreach($data as &$ent){
-// 			$data2[] = $this->save($tbl_name, $ent);
-			
-// 		}
-// 		unset($ent);
-// 		return $data2;
-// 	}
-	
 	
 	/**
 	 * 削除フラグを切り替える

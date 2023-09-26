@@ -43,7 +43,7 @@ class NekoController extends CrudBaseController {
 			$searches = [
 					'main_search' => $request->main_search, // メイン検索
 					
-					// CBBXS-3000
+					// CBBXS-5000
 					'id' => $request->id, // id
 					'neko_val1' => $request->neko_val1, // ネコ数値・範囲1
 					'neko_val2' => $request->neko_val2, // ネコ数値・範囲2

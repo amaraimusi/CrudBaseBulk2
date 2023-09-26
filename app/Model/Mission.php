@@ -1,18 +1,13 @@
 <?php
+
 namespace App\Model;
 
 use App\Model\CrudBase;
 
-/**
- * 任務管理画面のモデルクラス
- *
- * @date 2015-9-16 | 2023-9-26
- * @author k-uehara
- *
- */
-class Mission extends CrudBase {
 
-
+class Mission extends CrudBase
+{
+	
 	/**
 	 * The attributes that are mass assignable.
 	 * DB保存時、ここで定義してあるDBフィールドのみ保存対象にします。
@@ -21,7 +16,7 @@ class Mission extends CrudBase {
 	 * @var array<int, string>
 	 */
 	protected $fillable = [
-			// CBBXS-3009
+			// CBBXS-5009
 			'id',
 			'mission_name',
 			'hina_file_id',
@@ -37,343 +32,402 @@ class Mission extends CrudBase {
 			'to_wamei',
 			'sort_no',
 			'delete_flg',
-			'update_user_id',
+			'update_user',
 			'ip_addr',
-			'created_at',
-			'updated_at',
-			
+			'created',
+			'modified',
+
 			// CBBXE
 	];
 	
 	
-	public function __construct() {
+	public function __construct(){
 		parent::__construct();
 		
-		// CrudBaseロジッククラスの生成
-		if(empty($this->CrudBase)) $this->CrudBase = new CrudBase();
 	}
 	
+	
 	/**
-	 * 任務エンティティを取得
-	 *
-	 * 任務テーブルからidに紐づくエンティティを取得します。
-	 *
-	 * @param int $id 任務ID
-	 * @return array 任務エンティティ
+	 * フィールドデータを取得する
+	 * @return [] $fieldData フィールドデータ
 	 */
-	public function findEntity($id){
-
-		$conditions='id = '.$id;
-
-		//DBからデータを取得
-		$data = $this->find(
-				'first',
-				Array(
-						'conditions' => $conditions,
-				)
-		);
-
-		$ent=array();
-		if(!empty($data)){
-			$ent=$data['Mission'];
-		}
+	public function getFieldData(){
 		
+		$fieldData = [
+				// CBBXS-5014
+				'id' => [], // id
+				'mission_name' => [], // 任務名
+				'hina_file_id' => [ // 猫種別
+					'outer_table' => 'hina_files',
+					'outer_field' => 'hina_file_name', 
+					'outer_list'=>'hinaFile	List',
+				],
+				'from_path' => [], // 複製元パス
+				'from_scr_code' => [], // 複製元画面コード
+				'from_db_name' => [], // 複製元DB名
+				'from_tbl_name' => [], // 複製元テーブル名
+				'from_wamei' => [], // 複製元和名
+				'to_path' => [], // 複製先パス
+				'to_scr_code' => [], // 複製先画面コード
+				'to_db_name' => [], // 複製先DB名
+				'to_tbl_name' => [], // 複製先テーブル名
+				'to_wamei' => [], // 複製先和名
+				'sort_no' => [], // 順番
+				'delete_flg' => [
+						'value_type'=>'delete_flg',
+				], // 無効フラグ
+				'update_user' => [], // 更新者
+				'ip_addr' => [], // IPアドレス
+				'created' => [], // 生成日時
+				'modified' => [], // 更新日
 
+				// CBBXE
+		];
+		
+		// フィールドデータへＤＢからのフィールド詳細情報を追加
+		$fieldData = $this->addFieldDetailsFromDB($fieldData, 'missions');
+		
+		// フィールドデータに登録対象フラグを追加します。
+		$fieldData = $this->addRegFlgToFieldData($fieldData, $this->fillable);
 
-
-		return $ent;
+		return $fieldData;
 	}
-
+	
+	
 	/**
-	 * 任務画面の一覧に表示するデータを、任務テーブルから取得します。
-	 * 
-	 * @note
-	 * 検索条件、ページ番号、表示件数、ソート情報からDB（任務テーブル）を検索し、
-	 * 一覧に表示するデータを取得します。
-	 * 
-	 * @param array $kjs 検索条件情報
-	 * @param int $page_no ページ番号
-	 * @param int $row_limit 表示件数
-	 * @param string sort ソートフィールド
-	 * @param int sort_desc ソートタイプ 0:昇順 , 1:降順
-	 * @return array 任務画面一覧のデータ
+	 * DBから一覧データを取得する
+	 * @param [] $searches 検索データ
+	 * @param [] $param
+	 *     - string use_type 用途タイプ 　index:一覧データ用（デフォルト）, csv:CSVダウンロード用
+	 *     - int def_per_page  デフォルト制限行数
+	 * @return [] 一覧データ
 	 */
-	public function findData($kjs,$page_no,$row_limit,$sort_field,$sort_desc){
-
-		//条件を作成
-		$conditions=$this->createKjConditions($kjs);
+	public function getData($searches, $param=[]){
 		
-		// オフセットの組み立て
-		$offset=null;
-		if(!empty($row_limit)) $offset = $page_no * $row_limit;
+		$searches = $this->sqlSanitizeW($searches);
 		
-		// ORDER文の組み立て
-		$order = $sort_field;
-		if(empty($order)) $order='sort_no';
-		if(!empty($sort_desc)) $order .= ' DESC';
+		$use_type = $param['use_type'] ?? 'index';
+		$def_per_page = $param['def_per_page'] ?? 50;
 		
-		$option=array(
-            'conditions' => $conditions,
-            'limit' =>$row_limit,
-            'offset'=>$offset,
-            'order' => $order,
-        );
+		// 検索条件リストを作成
+		$whereList = $this->makeWhereList($searches);
 		
-		//DBからデータを取得
-		$data = $this->find('all',$option);
-
-		//データ構造を変換（2次元配列化）
-		$data2=array();
-		foreach($data as $i=>$tbl){
-			foreach($tbl as $ent){
-				foreach($ent as $key => $v){
-					$data2[$i][$key]=$v;
-				}
-			}
+		// メイン検索
+		if(!empty($searches['main_search'])){
+			$whereList[] = "CONCAT( IFNULL(missions.mission_name, '') , IFNULL(missions.note, '') ) LIKE '%{$searches['main_search']}%'";
 		}
 		
-		return $data2;
+		// 検索条件リストを連結する
+		$where = implode(" AND ", $whereList);
+		
+		$sort_field = $searches['sort'] ?? 'sort_no'; // 並びフィールド
+		$dire = 'asc'; // 並び向き
+		if(!empty($searches['desc'])){
+			$dire = 'desc';
+		}
+		$order = $sort_field . ' ' . $dire;
+		
+		// 一覧用のデータ取得。ページネーションを考慮している。
+		$limit = '';
+		if($use_type == 'index'){
+			
+			$per_page = $searches['per_page'] ?? $def_per_page; // 行制限数(一覧の最大行数) デフォルトは50行まで。
+			$page =  $searches['page'] ?? 0;
+			$offset = $per_page  * ($page - 1);
+			$limit =" LIMIT {$per_page} OFFSET $offset" ;
+			
+		}
+
+		$sql = "
+			SELECT SQL_CALC_FOUND_ROWS 
+				missions.id as id,
+				missions.mission_val as mission_val,
+				missions.mission_name as mission_name,
+				missions.mission_date as mission_date,
+				missions.mission_type as mission_type,
+				missions.mission_dt as mission_dt,
+				missions.mission_flg as mission_flg,
+				missions.img_fn as img_fn,
+				missions.note as note,
+				missions.sort_no as sort_no,
+				missions.delete_flg as delete_flg,
+				missions.update_user_id as update_user_id,
+				users.username as update_user,
+				missions.ip_addr as ip_addr,
+				missions.created_at as created_at,
+				missions.updated_at as updated_at
+			FROM
+				missions 
+			LEFT JOIN users ON missions.update_user_id = users.id
+			WHERE 
+				{$where}
+			ORDER BY {$order}
+			{$limit}
+		";
+			
+		$data = $this->query($sql); // DBから一覧データを取得する
+		
+		// LIMIT制限を受けていないデータ件数を取得する
+		$res = $this->query("SELECT FOUND_ROWS();");
+		$total = 0;
+		if(!empty($res)){
+			$total = $res[0]['FOUND_ROWS()'];
+		}
+
+		return [
+				'data' => $data,
+				'total' => $total,
+		];
+
 	}
 	
-	
 	/**
-	 * 一覧データを取得する
+	 * 検索条件リストを作成
+	 * @param [] $searches　検索データ
+	 * @return [] 検索条件リスト
 	 */
-	public function findData2(&$crudBaseData){
-
-		$kjs = $crudBaseData['kjs'];//検索条件情報
-		$pages = $crudBaseData['pages'];//ページネーション情報
-
-		$data = $this->findData($kjs,$pages['page_no'],$pages['row_limit'],$pages['sort_field'],$pages['sort_desc']);
+	private function makeWhereList($searches){
 		
-		return $data;
-	}
+		$whereList = [];
+		
+		// SQLインジェクションのサニタイズ
+		$searches = $this->sqlSanitizeW($searches);
+		
+		// CBBXS-3003
 
+	    // id
+	    if(!empty($searches['id'])){
+	        $query = $query->where('missions.id',$searches['id']);
+	    }
+
+	    // 任務名
+	    if(!empty($searches['mission_name'])){
+	        $query = $query->where('missions.mission_name', 'LIKE', "%{$searches['mission_name']}%");
+	    }
+
+	    // 雛ファイルID
+	    if(!empty($searches['hina_file_id'])){
+	        $query = $query->where('missions.hina_file_id',$searches['hina_file_id']);
+	    }
+
+	    // 複製元パス
+	    if(!empty($searches['from_path'])){
+	        $query = $query->where('missions.from_path', 'LIKE', "%{$searches['from_path']}%");
+	    }
+
+	    // 複製元画面コード
+	    if(!empty($searches['from_scr_code'])){
+	        $query = $query->where('missions.from_scr_code', 'LIKE', "%{$searches['from_scr_code']}%");
+	    }
+
+	    // 複製元DB名
+	    if(!empty($searches['from_db_name'])){
+	        $query = $query->where('missions.from_db_name', 'LIKE', "%{$searches['from_db_name']}%");
+	    }
+
+	    // 複製元テーブル名
+	    if(!empty($searches['from_tbl_name'])){
+	        $query = $query->where('missions.from_tbl_name', 'LIKE', "%{$searches['from_tbl_name']}%");
+	    }
+
+	    // 複製元和名
+	    if(!empty($searches['from_wamei'])){
+	        $query = $query->where('missions.from_wamei', 'LIKE', "%{$searches['from_wamei']}%");
+	    }
+
+	    // 複製先パス
+	    if(!empty($searches['to_path'])){
+	        $query = $query->where('missions.to_path', 'LIKE', "%{$searches['to_path']}%");
+	    }
+
+	    // 複製先画面コード
+	    if(!empty($searches['to_scr_code'])){
+	        $query = $query->where('missions.to_scr_code', 'LIKE', "%{$searches['to_scr_code']}%");
+	    }
+
+	    // 複製先DB名
+	    if(!empty($searches['to_db_name'])){
+	        $query = $query->where('missions.to_db_name', 'LIKE', "%{$searches['to_db_name']}%");
+	    }
+
+	    // 複製先テーブル名
+	    if(!empty($searches['to_tbl_name'])){
+	        $query = $query->where('missions.to_tbl_name', 'LIKE', "%{$searches['to_tbl_name']}%");
+	    }
+
+	    // 複製先和名
+	    if(!empty($searches['to_wamei'])){
+	        $query = $query->where('missions.to_wamei', 'LIKE', "%{$searches['to_wamei']}%");
+	    }
+
+	    // 順番
+	    if(!empty($searches['sort_no'])){
+	        $query = $query->where('missions.sort_no',$searches['sort_no']);
+	    }
+
+	    // 無効フラグ
+	    if(!empty($searches['delete_flg'])){
+	        $query = $query->where('missions.delete_flg',$searches['delete_flg']);
+	    }else{
+	        $query = $query->where('missions.delete_flg', 0);
+	    }
+
+	    // 更新者
+	    if(!empty($searches['update_user'])){
+	        $query = $query->where('missions.update_user', 'LIKE', "%{$searches['update_user']}%");
+	    }
+
+	    // IPアドレス
+	    if(!empty($searches['ip_addr'])){
+	        $query = $query->where('missions.ip_addr', 'LIKE', "%{$searches['ip_addr']}%");
+	    }
+
+	    // 生成日時
+	    if(!empty($searches['created'])){
+	        $query = $query->where('missions.created',$searches['created']);
+	    }
+
+	    // 更新日
+	    if(!empty($searches['modified'])){
+	        $query = $query->where('missions.modified',$searches['modified']);
+	    }
+
+		// CBBXE
+		
+		return $whereList;
+	}
 	
 	
 	/**
-	 * SQLのダンプ
-	 * @param  $option
+	 * idに紐づくエンティティを取得する
+	 * @param int id
+	 * @return [] エンティティ
 	 */
-	private function dumpSql($option){
-		$dbo = $this->getDataSource();
-		
-		$option['table']=$dbo->fullTableName($this->Mission);
-		$option['alias']='Mission';
-		
-		$query = $dbo->buildStatement($option,$this->Mission);
-		
-		Debugger::dump($query);
-	}
-
-
-
-	/**
-	 * 検索条件情報からWHERE情報を作成。
-	 * @param array $kjs	検索条件情報
-	 * @return string WHERE情報
-	 */
-	private function createKjConditions($kjs){
-
-		$cnds=null;
-		
-		$this->CrudBase->sql_sanitize($kjs); // SQLサニタイズ
-		
-		// --- Start kjConditions
-		
-		if(!empty($kjs['kj_id'])){
-			$cnds[]="Mission.id = {$kjs['kj_id']}";
-		}
-		
-		if(!empty($kjs['kj_mission_name'])){
-		    $cnds[]="Mission.mission_name LIKE '%{$kjs['kj_mission_name']}%'";
-		}
-		if(!empty($kjs['kj_hina_file_id'])){
-			$cnds[]="Mission.hina_file_id = '{$kjs['kj_hina_file_id']}'";
-		}
-		if(!empty($kjs['kj_from_path'])){
-		    $cnds[]="Mission.from_path LIKE '%{$kjs['kj_from_path']}%'";
-		}
-		if(!empty($kjs['kj_from_scr_code'])){
-		    $cnds[]="Mission.from_scr_code LIKE '%{$kjs['kj_from_scr_code']}%'";
-		}
-		if(!empty($kjs['kj_from_db_name'])){
-		    $cnds[]="Mission.from_db_name LIKE '%{$kjs['kj_from_db_name']}%'";
-		}
-		if(!empty($kjs['kj_from_tbl_name'])){
-		    $cnds[]="Mission.from_tbl_name LIKE '%{$kjs['kj_from_tbl_name']}%'";
-		}
-		if(!empty($kjs['kj_from_wamei'])){
-		    $cnds[]="Mission.from_wamei LIKE '%{$kjs['kj_from_wamei']}%'";
-		}
-		if(!empty($kjs['kj_to_path'])){
-		    $cnds[]="Mission.to_path LIKE '%{$kjs['kj_to_path']}%'";
-		}
-		if(!empty($kjs['kj_to_scr_code'])){
-		    $cnds[]="Mission.to_scr_code LIKE '%{$kjs['kj_to_scr_code']}%'";
-		}
-		if(!empty($kjs['kj_to_db_name'])){
-		    $cnds[]="Mission.to_db_name LIKE '%{$kjs['kj_to_db_name']}%'";
-		}
-		if(!empty($kjs['kj_to_tbl_name'])){
-		    $cnds[]="Mission.to_tbl_name LIKE '%{$kjs['kj_to_tbl_name']}%'";
-		}
-		if(!empty($kjs['kj_to_wamei'])){
-		    $cnds[]="Mission.to_wamei LIKE '%{$kjs['kj_to_wamei']}%'";
-		}
-		
-		if(!empty($kjs['kj_sort_no']) || $kjs['kj_sort_no'] ==='0' || $kjs['kj_sort_no'] ===0){
-			$cnds[]="Mission.sort_no = {$kjs['kj_sort_no']}";
-		}
-		
-		$kj_delete_flg = $kjs['kj_delete_flg'];
-		if(!empty($kjs['kj_delete_flg']) || $kjs['kj_delete_flg'] ==='0' || $kjs['kj_delete_flg'] ===0){
-			if($kjs['kj_delete_flg'] != -1){
-			   $cnds[]="Mission.delete_flg = {$kjs['kj_delete_flg']}";
-			}
-		}
-
-		if(!empty($kjs['kj_update_user'])){
-			$cnds[]="Mission.update_user = '{$kjs['kj_update_user']}'";
-		}
-
-		if(!empty($kjs['kj_ip_addr'])){
-			$cnds[]="Mission.ip_addr = '{$kjs['kj_ip_addr']}'";
-		}
-		
-		if(!empty($kjs['kj_user_agent'])){
-			$cnds[]="Mission.user_agent LIKE '%{$kjs['kj_user_agent']}%'";
-		}
-
-		if(!empty($kjs['kj_created'])){
-			$kj_created=$kjs['kj_created'].' 00:00:00';
-			$cnds[]="Mission.created >= '{$kj_created}'";
-		}
-		
-		if(!empty($kjs['kj_modified'])){
-			$kj_modified=$kjs['kj_modified'].' 00:00:00';
-			$cnds[]="Mission.modified >= '{$kj_modified}'";
-		}
-		
-		// --- End kjConditions
-		
-		$cnd=null;
-		if(!empty($cnds)){
-			$cnd=implode(' AND ',$cnds);
-		}
-
-		return $cnd;
-
-	}
-
-	/**
-	 * エンティティをDB保存
-	 *
-	 * 任務エンティティを任務テーブルに保存します。
-	 *
-	 * @param array $ent 任務エンティティ
-	 * @param array $option オプション
-	 * @return array 任務エンティティ（saveメソッドのレスポンス）
-	 */
-	public function saveEntity($ent,$option=array()){
-		
-		
-		// 新規入力であるなら新しい順番をエンティティにセットする。
-		if($option['form_type']=='new_inp' ){
-			if(empty($option['ni_tr_place'])){
-				$ent['sort_no'] = $this->CrudBase->getLastSortNo($this); // 末尾順番を取得する
-			}else{
-				$ent['sort_no'] = $this->CrudBase->getFirstSortNo($this); // 先頭順番を取得する
-			}
-		}
-
-		//DBに登録('atomic' => false　トランザクションなし）
-		$ent = $this->save($ent, array('atomic' => false,'validate'=>false));
-
-		//DBからエンティティを取得
-		$ent = $this->find('first',
-				array(
-						'conditions' => "id={$ent['Mission']['id']}"
-				));
-
-		$ent=$ent['Mission'];
-		if(empty($ent['delete_flg'])) $ent['delete_flg'] = 0;
-
-		return $ent;
-	}
-
-
-
-
-	/**
-	 * 全データ件数を取得
-	 *
-	 * limitによる制限をとりはらった、検索条件に紐づく件数を取得します。
-	 *  全データ件数はページネーション生成のために使われています。
-	 *
-	 * @param array $kjs 検索条件情報
-	 * @return int 全データ件数
-	 */
-	public function findDataCnt($kjs){
-
-		//DBから取得するフィールド
-		$fields=array('COUNT(id) AS cnt');
-		$conditions=$this->createKjConditions($kjs);
-
-		//DBからデータを取得
-		$data = $this->find(
-				'first',
-				Array(
-						'fields'=>$fields,
-						'conditions' => $conditions,
-				)
-		);
-
-		$cnt=$data[0]['cnt'];
-		return $cnt;
+	public function getEntityById($id){
+		if(empty($id)) return [];
+		$sql = "SELECT * FROM missions WHERE `id`={$id}";
+		$data = $this->query($sql);
+		if(empty($data)) return [];
+		return $data[0];
 	}
 	
+	//■■■□□□■■■□□□
+// 	/**
+// 	 * 次の順番を取得する
+// 	 * @return int 順番
+// 	 */
+// 	public function nextSortNo(){
+
+// 		$res = $this->query("SELECT MAX(sort_no) AS max_sort_no;");
+		
+// 		if(empty($res)){
+// 			return 0;
+// 		}
+		
+// 		$sort_no = $res[0]['max_sort_no'];;
+// 		$sort_no++;
+		
+// 		return $sort_no;
+// 	}
+	
+	
+// 	/**■■■□□□■■■□□□
+// 	 * エンティティのDB保存
+// 	 * @note エンティティのidが空ならINSERT, 空でないならUPDATEになる。
+// 	 * @param [] $ent エンティティ
+// 	 * @return [] エンティティ(insertされた場合、新idがセットされている）
+// 	 */
+// 	public function saveEntity(&$ent){
+		
+// 		if(empty($ent['id'])){
+			
+// 			// ▽ idが空であればINSERTをする。
+// 			$ent = array_intersect_key($ent, array_flip($this->fillable)); // ホワイトリストによるフィルタリング
+// 			$id = $this->insertGetId($ent); // INSERT
+// 			$ent['id'] = $id;
+// 		}else{
+			
+// 			// ▽ idが空でなければUPDATEする。
+// 			$ent = array_intersect_key($ent, array_flip($this->fillable)); // ホワイトリストによるフィルタリング
+// 			$this->updateOrCreate(['id'=>$ent['id']], $ent); // UPDATE
+// 		}
+		
+// 		return $ent;
+// 	}
+	
+	
+// 	/**■■■□□□■■■□□□
+// 	 * データのDB保存
+// 	 * @param string $tbl_name テーブル名
+// 	 * @param [] $data データ（エンティティの配列）
+// 	 * @return [] データ(insertされた場合、新idがセットされている）
+// 	 */
+// 	public function saveAll($tbl_name, &$data){
+		
+// 		$data2 = [];
+// 		foreach($data as &$ent){
+// 			$data2[] = $this->save($tbl_name, $ent);
+			
+// 		}
+// 		unset($ent);
+// 		return $data2;
+// 	}
 	
 	
 	/**
-	 * 雛ファイルリストを取得する
+	 * 削除フラグを切り替える
+	 * @param array $ids IDリスト
+	 * @param int $delete_flg 削除フラグ   0:有効  , 1:削除
+	 * @param [] $userInfo ユーザー情報
+	 */
+	public function switchDeleteFlg($ids, $delete_flg, $userInfo){
+		
+		// IDリストと削除フラグからデータを作成する
+		$data = [];
+		foreach($ids as $id){
+			$ent = [
+					'id' => $id,
+					'delete_flg' => $delete_flg,
+			];
+			$data[] = $ent;
+			
+		}
+		
+		// 更新ユーザーなど共通フィールドをデータにセットする。
+		$data = $this->setCommonToData($data, $userInfo);
+
+		// データを更新する
+		$rs = $this->saveAll('missions', $data);
+		
+		return $rs;
+		
+	}
+	
+	
+	// CBBXS-3021
+	/**
+	 *  雛ファイルID種別リストを取得する
+	 *  @return [] 雛ファイルID種別リスト
 	 */
 	public function getHinaFileList(){
-		if(empty($this->HinaFile)){
-			App::uses('HinaFile','Model');
-			$this->HinaFile=ClassRegistry::init('HinaFile');
-		}
-		
-		//SELECT情報
-		$fields=array(
-				'id',
-				'hina_file_name',
-		);
-		
-		//WHERE情報
-		$conditions=array("delete_flg = 0");
-		
-		//ORDER情報
-		$order=array('sort_no');
-		
-		//オプション
-		$option=array(
-				'fields'=>$fields,
-				'conditions'=>$conditions,
-				'order'=>$order,
-		);
-		
-		//DBから取得
-		$data=$this->HinaFile->find('all',$option);
-		
-		//2次元配列に構造変換する。
-		if(!empty($data)){
-			$data=Hash::combine($data, '{n}.HinaFile.id','{n}.HinaFile.hina_file_name');
-		}
-		
-		return $data;
+	    
+	    $query = DB::table('hina_files')->
+	       select(['id', 'hina_file_name'])->
+	       where('delete_flg',0);
+	    
+	    $res = $query->get();
+	    $list = [];
+	    foreach($res as $ent){
+	        $list[$ent->id] = $ent->hina_file_name;
+	    }
+
+	    return $list;
 	}
+
+	// CBBXE
+	
+	
 	
 
-
 }
+
