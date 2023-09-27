@@ -363,8 +363,13 @@ function _showForm(row_index, inp_mode){
 		throw new Error('システムエラー23051109A');
 	}
 	
+	console.log('crudBaseData.data2');//■■■□□□■■■□□□
+	console.log(crudBase.crudBaseData.data[0].id);//■■■□□□■■■□□□
 	// 入力フォームにエンティティを反映する
 	crudBase.setEntToForm(ent, row_index, inp_mode); 
+	
+	console.log('crudBaseData.data3');//■■■□□□■■■□□□
+	console.log(crudBase.crudBaseData.data[0].id);//■■■□□□■■■□□□
 	
 	// 新規入力モード、編集モードのそれぞれの表示切替。 複製は新規入力モード扱い
 	if(inp_mode=='create' || inp_mode=='copy'){

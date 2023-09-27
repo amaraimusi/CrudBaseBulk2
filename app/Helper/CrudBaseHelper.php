@@ -1190,7 +1190,7 @@ class CrudBaseHelper
     	}
     	
     	$html = "
-    	<select name='delete_flg' class='form-control search_btn_x'>
+    	<select name='delete_flg' class='form-control search_btn_x js_search_inp'>
 	    	<option value=''> - 有効/削除 - </option>
 	    	<option value='0' {$selected_0}>有効</option>
 	    	<option value='1' {$selected_1}>削除</option>

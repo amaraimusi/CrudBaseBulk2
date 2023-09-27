@@ -8,8 +8,8 @@
  * 他のJavaScriptライブラリとの競合問題を考え、ベースとなるライブラリはVue.jsではなくjQueryを採用しています。
  * 
  * @license MIT
- * @since 2016-9-21 | 2023-9-12
- * @version 4.0.3
+ * @since 2016-9-21 | 2023-9-27
+ * @version 4.0.4
  * @histroy
  * 2024-4-17 v4.0.0 保守性の問題解決のため、大幅なリニューアルをする。
  * 2019-6-28 v2.8.3 CSVフィールドデータ補助クラス | CsvFieldDataSupport.js
@@ -190,7 +190,7 @@ class CrudBase4{
 	* @return {} エンティティ
 	*/
 	getEntityByRowIndex(row_index){
-		
+
 		// メイン一覧テーブルの行インデックスに紐づく行からエンティティを取得する。
 		let rowEnt = this._getEntityByRowIndex(row_index);
 		
@@ -204,7 +204,7 @@ class CrudBase4{
 		
 		// CrudBaseDataへエンティティをセットする。
 		this.setEntityToCrudBaseData(ent);
-		
+
 		return ent;
 
 	}
@@ -285,13 +285,16 @@ class CrudBase4{
 	* @param {} pEnt エンティティ
 	*/
 	setEntityToCrudBaseData(pEnt){
+		
 		let data = this._getData();
 
 		for(let i in data){
 			let ent = data[i];
 			if(ent.id == pEnt.id){
-				data[i] = pEnt;
-				break;
+				for(let field in pEnt){
+					ent[field] = pEnt[field];
+				}
+				return;
 			}
 		}
 	}
@@ -340,11 +343,16 @@ class CrudBase4{
 	* @param string inp_mode 入力モード: create:新規入力モード, edit:編集モード, copy:複製モード
 	*/
 	setEntToForm(ent, row_index, inp_mode){
-		
-		if(inp_mode == 'create' || inp_mode == 'copy') ent['id'] = null;
-		
+
 		for(let field in ent){
 			let value = ent[field];
+			
+			if(field == 'id'){
+				if(inp_mode == 'create' || inp_mode == 'copy'){
+					value = null;
+				}
+			}
+			
 			let jqInp = this._getInpFromForm(field); // フォームから入力要素を取得する
 			if(jqInp[0] != null){
 				this.setValueToElement(jqInp, field, value); // 様々なタイプの要素へ値をセットする
