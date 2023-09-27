@@ -56,23 +56,23 @@ $debug_mode = $crudBaseData['debug_mode'];
 
 			<div><?php echo $cbh->searchFormId(); ?></div>
 			
-			
+			<!-- CBBXS-5030 -->
 			<div><?php echo $cbh->searchFormIntRange('neko_val', 'ネコ数値'); ?></div>
 			<div><?php echo $cbh->searchFormText('neko_name', 'ネコ名', ['pattern'=>'[\u30A1-\u30FF]+', 'err_msg'=>'👈%display_nameはカタカナのみ入力可能です。']); ?></div>
-			
 			<div><?php echo $cbh->searchFormDateRng('neko_date', 'ネコ日付'); ?></div>
 			<div><?php echo $cbh->searchFormSelect('neko_type', 'ネコ種別', $nekoTypeList); ?></div>
 			<div><?php echo $cbh->searchFormDatetime('neko_dt', 'ネコ日時'); ?></div>
 			<div><?php echo $cbh->searchFormFlg('neko_flg', 'ネコフラグ'); ?></div>
 			<div><?php echo $cbh->searchFormText('img_fn', '画像ファイル名'); ?></div>
 			<div><?php echo $cbh->searchFormText('note', '備考'); ?></div>
+			<!-- CBBXE -->
 			<div><?php echo $cbh->searchFormInt('sort_no', '順番'); ?></div>
 			<div><?php echo $cbh->searchFormText('ip_addr', 'IPアドレス'); ?></div>
-			<?php echo $cbh->searchFormDelete(); ?>
+			<div><?php echo $cbh->searchFormDelete(); ?></div>
 			<div><?php echo $cbh->searchFormText('update_user', '更新者'); ?></div>
-			<?php echo $cbh->searchFormCreated(); ?>
-			<?php echo $cbh->searchFormUpdated(); ?>
-			<?php echo $cbh->searchFormLimit(); ?>
+			<div><?php echo $cbh->searchFormCreated(); ?></div>
+			<div><?php echo $cbh->searchFormUpdated(); ?></div>
+			<div><?php echo $cbh->searchFormLimit(); ?></div>
 
 			<button type="button" class ="btn btn-outline-secondary" onclick="$('#search_dtl_div').toggle(300);">＜ 閉じる</button>
 			
@@ -117,8 +117,8 @@ $debug_mode = $crudBaseData['debug_mode'];
 <table id="main_tbl" class="table table-striped table-bordered table-condensed">
 	<thead>
 		<tr>
-			<!-- CBBXS-3035 -->
 			<th data-field='id'><?php echo $cbh->sortLink($searches, 'neko', 'id', 'ID'); ?></th>
+			<!-- CBBXS-5035 -->
 			<th data-field='neko_val'><?php echo $cbh->sortLink($searches, 'neko', 'neko_val', 'ネコ数値'); ?></th>
 			<th data-field='neko_name'><?php echo $cbh->sortLink($searches, 'neko', 'neko_name', 'ネコ名'); ?></th>
 			<th data-field='neko_date'><?php echo $cbh->sortLink($searches, 'neko', 'neko_date', 'ネコ日付'); ?></th>
@@ -127,6 +127,7 @@ $debug_mode = $crudBaseData['debug_mode'];
 			<th data-field='neko_flg'><?php echo $cbh->sortLink($searches, 'neko', 'neko_flg', 'ネコフラグ'); ?></th>
 			<th data-field='img_fn'><?php echo $cbh->sortLink($searches, 'neko', 'img_fn', '画像ファイル名'); ?></th>
 			<th data-field='note'><?php echo $cbh->sortLink($searches, 'neko', 'note', '備考'); ?></th>
+			<!-- CBBXE -->
 			<th data-field='sort_no'><?php echo $cbh->sortLink($searches, 'neko', 'sort_no', '順番'); ?></th>
 			<th data-field='delete_flg'><?php echo $cbh->sortLink($searches, 'neko', 'delete_flg', '無効フラグ'); ?></th>
 			<th data-field='update_user_id'><?php echo $cbh->sortLink($searches, 'neko', 'update_user_id', '更新者'); ?></th>
@@ -134,7 +135,6 @@ $debug_mode = $crudBaseData['debug_mode'];
 			<th data-field='created_at'><?php echo $cbh->sortLink($searches, 'neko', 'created_at', '生成日時'); ?></th>
 			<th data-field='updated_at'><?php echo $cbh->sortLink($searches, 'neko', 'updated_at', '更新日'); ?></th>
 
-			<!-- CBBXE -->
 			<th class='js_btns' 'style="width:280px"></th>
 		</tr>
 	</thead>
@@ -142,6 +142,7 @@ $debug_mode = $crudBaseData['debug_mode'];
 		<?php foreach($data as $ent){?>
 		<tr>
 			<td><?php echo $cbh->tdId($ent['id']); ?></td>
+			<!-- CBBXS-5040 -->
 			<td><?php echo $cbh->tdUnit($ent['neko_val'], 'neko_val', null, 'cm'); ?></td>
 			<td><?php echo $cbh->tdStr($ent['neko_name']); ?></td>
 			<td><?php echo $cbh->tdDate($ent['neko_date']); ?></td>
@@ -150,6 +151,7 @@ $debug_mode = $crudBaseData['debug_mode'];
 			<td><?php echo $cbh->tdFlg($ent['neko_flg']);  ?></td>
 			<td><?php echo $cbh->tdImg($ent, 'img_fn'); ?></td>
 			<td><?php echo $cbh->tdNote($ent['note'], 'note', 30) ?></td>
+			<!-- CBBXE -->
 			<td><?php echo $cbh->tdStr($ent['sort_no']); ?></td>
 			<td><?php echo $cbh->tdDeleteFlg($ent['delete_flg']); ?></td>
 			<td><?php echo $cbh->tdStr($ent['update_user']); ?></td>

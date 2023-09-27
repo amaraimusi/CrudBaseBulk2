@@ -20,7 +20,7 @@
 
 	<div class="err text-danger"></div>
 	
-	<!-- CBBXS-2007 -->
+	
 	
 	<input type="hidden" name="sort_no">
 	
@@ -30,6 +30,8 @@
 			<input type="hidden" name="id" value=''  />
 		</div>
 	</div>
+	
+	<!-- CBBXS-5007 -->
 	
 	<div class="row mt-2">
 		<div class='col-md-2 ' >ネコ名</div>
@@ -93,20 +95,20 @@
 	</div>
 	
 	<div class="row mt-2">
+		<div class='col-md-2' >備考 </div>
+		<div class='col-md-10'>
+			<textarea name="note" class="form-control form-control-lg " maxlength="2000" title="2000文字以内で入力してください" ></textarea>
+			<div class="text-danger" data-valid-err="note"></div>
+		</div>
+	</div>
+	
+	<div class="row mt-2">
 		<div class='col-md-2' >削除</div>
 		<div class='col-md-10'>
 			<div class="form-check">
 				<input class="form-check-input" type="checkbox" value="" id="delete_flg" name="delete_flg">
 				<label class="form-check-label" for="delete_flg">チェックすると削除扱いになります</label>
 			</div>
-		</div>
-	</div>
-	
-	<div class="row mt-2">
-		<div class='col-md-2' >備考 </div>
-		<div class='col-md-10'>
-			<textarea name="note" class="form-control form-control-lg " maxlength="2000" title="2000文字以内で入力してください" ></textarea>
-			<div class="text-danger" data-valid-err="note"></div>
 		</div>
 	</div>
 	

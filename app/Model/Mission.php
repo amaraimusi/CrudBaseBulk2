@@ -4,7 +4,13 @@ namespace App\Model;
 
 use App\Model\CrudBase;
 
-
+/**
+ * 任務管理画面のモデルクラス
+ * @version 1.0.0
+ * @since 2023-9-27
+ * @author amaraimusi
+ *
+ */
 class Mission extends CrudBase
 {
 	
@@ -32,10 +38,11 @@ class Mission extends CrudBase
 			'to_wamei',
 			'sort_no',
 			'delete_flg',
+			'update_user_id',
 			'update_user',
 			'ip_addr',
-			'created',
-			'modified',
+			'created_at',
+			'updated_at',
 
 			// CBBXE
 	];
@@ -60,7 +67,7 @@ class Mission extends CrudBase
 				'hina_file_id' => [ // 猫種別
 					'outer_table' => 'hina_files',
 					'outer_field' => 'hina_file_name', 
-					'outer_list'=>'hinaFile	List',
+					'outer_list'=>'hinaFileList',
 				],
 				'from_path' => [], // 複製元パス
 				'from_scr_code' => [], // 複製元画面コード
@@ -76,10 +83,11 @@ class Mission extends CrudBase
 				'delete_flg' => [
 						'value_type'=>'delete_flg',
 				], // 無効フラグ
+				'update_user_id' => [], // 更新ユーザーID
 				'update_user' => [], // 更新者
 				'ip_addr' => [], // IPアドレス
-				'created' => [], // 生成日時
-				'modified' => [], // 更新日
+				'created_at' => [], // 生成日時
+				'updated_at' => [], // 更新日時
 
 				// CBBXE
 		];
@@ -114,7 +122,26 @@ class Mission extends CrudBase
 		
 		// メイン検索
 		if(!empty($searches['main_search'])){
-			$whereList[] = "CONCAT( IFNULL(missions.mission_name, '') , IFNULL(missions.note, '') ) LIKE '%{$searches['main_search']}%'";
+			$whereList[] = "
+				CONCAT( 
+					/* CBBXS-5017 */
+					IFNULL(missions.mission_name, '') , 
+					IFNULL(missions.from_path, '') , 
+					IFNULL(missions.from_scr_code, '') , 
+					IFNULL(missions.from_db_name, '') , 
+					IFNULL(missions.from_tbl_name, '') , 
+					IFNULL(missions.from_wamei, '') , 
+					IFNULL(missions.to_path, '') , 
+					IFNULL(missions.to_scr_code, '') , 
+					IFNULL(missions.to_db_name, '') , 
+					IFNULL(missions.to_tbl_name, '') , 
+					IFNULL(missions.to_wamei, '') , 
+					IFNULL(missions.update_user, '') , 
+					IFNULL(missions.ip_addr, '') , 
+
+					/* CBBXE */
+					''
+				 ) LIKE '%{$searches['main_search']}%'";
 		}
 		
 		// 検索条件リストを連結する
@@ -139,16 +166,23 @@ class Mission extends CrudBase
 		}
 
 		$sql = "
-			SELECT SQL_CALC_FOUND_ROWS 
-				missions.id as id,
-				missions.mission_val as mission_val,
+			SELECT SQL_CALC_FOUND_ROWS
+				missions.id as id, 
+				/* CBBXS-5019 */
 				missions.mission_name as mission_name,
-				missions.mission_date as mission_date,
-				missions.mission_type as mission_type,
-				missions.mission_dt as mission_dt,
-				missions.mission_flg as mission_flg,
-				missions.img_fn as img_fn,
-				missions.note as note,
+				missions.hina_file_id as hina_file_id,
+				missions.from_path as from_path,
+				missions.from_scr_code as from_scr_code,
+				missions.from_db_name as from_db_name,
+				missions.from_tbl_name as from_tbl_name,
+				missions.from_wamei as from_wamei,
+				missions.to_path as to_path,
+				missions.to_scr_code as to_scr_code,
+				missions.to_db_name as to_db_name,
+				missions.to_tbl_name as to_tbl_name,
+				missions.to_wamei as to_wamei,
+
+				/* CBBXE */
 				missions.sort_no as sort_no,
 				missions.delete_flg as delete_flg,
 				missions.update_user_id as update_user_id,
@@ -193,106 +227,150 @@ class Mission extends CrudBase
 		// SQLインジェクションのサニタイズ
 		$searches = $this->sqlSanitizeW($searches);
 		
-		// CBBXS-3003
 
-	    // id
-	    if(!empty($searches['id'])){
-	        $query = $query->where('missions.id',$searches['id']);
-	    }
+		// id
+		if(!empty($searches['id'])){
+			$whereList[] = "missions.`id` = {$searches['id']}";
+		}
+		
+		// CBBXS-5024
+		// id
+		if(!empty($searches['id'])){
+			$whereList[] = "missions.`id` = '{$searches['id']}'";
+		}
 
-	    // 任務名
-	    if(!empty($searches['mission_name'])){
-	        $query = $query->where('missions.mission_name', 'LIKE', "%{$searches['mission_name']}%");
-	    }
+		// 任務名
+		if(!empty($searches['mission_name'])){
+			$whereList[] = "missions.`mission_name` LIKE '%{$searches['mission_name']}%'";
+		}
 
-	    // 雛ファイルID
-	    if(!empty($searches['hina_file_id'])){
-	        $query = $query->where('missions.hina_file_id',$searches['hina_file_id']);
-	    }
+		// 雛ファイルID
+		if(!empty($searches['hina_file_id'])){
+			$whereList[] = "missions.`hina_file_id` = '{$searches['hina_file_id']}'";
+		}
 
-	    // 複製元パス
-	    if(!empty($searches['from_path'])){
-	        $query = $query->where('missions.from_path', 'LIKE', "%{$searches['from_path']}%");
-	    }
+		// 複製元パス
+		if(!empty($searches['from_path'])){
+			$whereList[] = "missions.`from_path` LIKE '%{$searches['from_path']}%'";
+		}
 
-	    // 複製元画面コード
-	    if(!empty($searches['from_scr_code'])){
-	        $query = $query->where('missions.from_scr_code', 'LIKE', "%{$searches['from_scr_code']}%");
-	    }
+		// 複製元画面コード
+		if(!empty($searches['from_scr_code'])){
+			$whereList[] = "missions.`from_scr_code` LIKE '%{$searches['from_scr_code']}%'";
+		}
 
-	    // 複製元DB名
-	    if(!empty($searches['from_db_name'])){
-	        $query = $query->where('missions.from_db_name', 'LIKE', "%{$searches['from_db_name']}%");
-	    }
+		// 複製元DB名
+		if(!empty($searches['from_db_name'])){
+			$whereList[] = "missions.`from_db_name` LIKE '%{$searches['from_db_name']}%'";
+		}
 
-	    // 複製元テーブル名
-	    if(!empty($searches['from_tbl_name'])){
-	        $query = $query->where('missions.from_tbl_name', 'LIKE', "%{$searches['from_tbl_name']}%");
-	    }
+		// 複製元テーブル名
+		if(!empty($searches['from_tbl_name'])){
+			$whereList[] = "missions.`from_tbl_name` LIKE '%{$searches['from_tbl_name']}%'";
+		}
 
-	    // 複製元和名
-	    if(!empty($searches['from_wamei'])){
-	        $query = $query->where('missions.from_wamei', 'LIKE', "%{$searches['from_wamei']}%");
-	    }
+		// 複製元和名
+		if(!empty($searches['from_wamei'])){
+			$whereList[] = "missions.`from_wamei` LIKE '%{$searches['from_wamei']}%'";
+		}
 
-	    // 複製先パス
-	    if(!empty($searches['to_path'])){
-	        $query = $query->where('missions.to_path', 'LIKE', "%{$searches['to_path']}%");
-	    }
+		// 複製先パス
+		if(!empty($searches['to_path'])){
+			$whereList[] = "missions.`to_path` LIKE '%{$searches['to_path']}%'";
+		}
 
-	    // 複製先画面コード
-	    if(!empty($searches['to_scr_code'])){
-	        $query = $query->where('missions.to_scr_code', 'LIKE', "%{$searches['to_scr_code']}%");
-	    }
+		// 複製先画面コード
+		if(!empty($searches['to_scr_code'])){
+			$whereList[] = "missions.`to_scr_code` LIKE '%{$searches['to_scr_code']}%'";
+		}
 
-	    // 複製先DB名
-	    if(!empty($searches['to_db_name'])){
-	        $query = $query->where('missions.to_db_name', 'LIKE', "%{$searches['to_db_name']}%");
-	    }
+		// 複製先DB名
+		if(!empty($searches['to_db_name'])){
+			$whereList[] = "missions.`to_db_name` LIKE '%{$searches['to_db_name']}%'";
+		}
 
-	    // 複製先テーブル名
-	    if(!empty($searches['to_tbl_name'])){
-	        $query = $query->where('missions.to_tbl_name', 'LIKE', "%{$searches['to_tbl_name']}%");
-	    }
+		// 複製先テーブル名
+		if(!empty($searches['to_tbl_name'])){
+			$whereList[] = "missions.`to_tbl_name` LIKE '%{$searches['to_tbl_name']}%'";
+		}
 
-	    // 複製先和名
-	    if(!empty($searches['to_wamei'])){
-	        $query = $query->where('missions.to_wamei', 'LIKE', "%{$searches['to_wamei']}%");
-	    }
+		// 複製先和名
+		if(!empty($searches['to_wamei'])){
+			$whereList[] = "missions.`to_wamei` LIKE '%{$searches['to_wamei']}%'";
+		}
 
-	    // 順番
-	    if(!empty($searches['sort_no'])){
-	        $query = $query->where('missions.sort_no',$searches['sort_no']);
-	    }
+		// 順番
+		if(!empty($searches['sort_no'])){
+			$whereList[] = "missions.`sort_no` = '{$searches['sort_no']}'";
+		}
 
-	    // 無効フラグ
-	    if(!empty($searches['delete_flg'])){
-	        $query = $query->where('missions.delete_flg',$searches['delete_flg']);
-	    }else{
-	        $query = $query->where('missions.delete_flg', 0);
-	    }
+		// 無効フラグ
+		if(!empty($searches['delete_flg']) || $searches['delete_flg'] ==='0' || $searches['delete_flg'] ===0){
+			if($searches['delete_flg'] != -1){
+				$whereList[]="missions.delete_flg = {$searches['delete_flg']}";
+			}
+		}
 
-	    // 更新者
-	    if(!empty($searches['update_user'])){
-	        $query = $query->where('missions.update_user', 'LIKE', "%{$searches['update_user']}%");
-	    }
+		// 更新ユーザーID
+		if(!empty($searches['update_user_id'])){
+			$whereList[] = "missions.`update_user_id` = '{$searches['update_user_id']}'";
+		}
 
-	    // IPアドレス
-	    if(!empty($searches['ip_addr'])){
-	        $query = $query->where('missions.ip_addr', 'LIKE', "%{$searches['ip_addr']}%");
-	    }
+		// 更新者
+		if(!empty($searches['update_user'])){
+			$whereList[] = "missions.`update_user` LIKE '%{$searches['update_user']}%'";
+		}
 
-	    // 生成日時
-	    if(!empty($searches['created'])){
-	        $query = $query->where('missions.created',$searches['created']);
-	    }
+		// IPアドレス
+		if(!empty($searches['ip_addr'])){
+			$whereList[] = "missions.`ip_addr` LIKE '%{$searches['ip_addr']}%'";
+		}
 
-	    // 更新日
-	    if(!empty($searches['modified'])){
-	        $query = $query->where('missions.modified',$searches['modified']);
-	    }
+		// 生成日時
+		if(!empty($searches['created_at'])){
+			$whereList[] = "missions.`created_at` >= '{$searches['created_at']}'";
+		}
+		
+		// 更新日時
+		if(!empty($searches['updated_at'])){
+			$whereList[] = "missions.`updated_at` >= '{$searches['updated_at']}'";
+		}
+		
 
 		// CBBXE
+
+		// 順番
+		if(!empty($searches['sort_no'])){
+			$whereList[] = "missions.`sort_no` = {$searches['sort_no']}";
+		}
+		
+		// 無効フラグ
+		if(!empty($searches['delete_flg'])){
+			$whereList[] = "missions.`delete_flg` = {$searches['delete_flg']}";
+		}else{
+			$whereList[] = "missions.`delete_flg` = 0";
+		}
+		
+		// 更新者
+		if(!empty($searches['update_user'])){
+			$whereList[] = "users.`username` = `{$searches['update_user']}`";
+		}
+
+		// IPアドレス
+		if(!empty($searches['ip_addr'])){
+			$whereList[] = "missions.`ip_addr` LIKE '%{$searches['ip_addr']}%'";
+		}
+
+		// 生成日時
+		if(!empty($searches['created_at'])){
+			$whereList[] = "missions.`created_at` >= '{$searches['created_at']}'";
+		}
+
+		// 更新日
+		if(!empty($searches['updated_at'])){
+			$whereList[] = "missions.`updated_at` >= '{$searches['updated_at']}'";
+		}
+
 		
 		return $whereList;
 	}
@@ -310,69 +388,6 @@ class Mission extends CrudBase
 		if(empty($data)) return [];
 		return $data[0];
 	}
-	
-	//■■■□□□■■■□□□
-// 	/**
-// 	 * 次の順番を取得する
-// 	 * @return int 順番
-// 	 */
-// 	public function nextSortNo(){
-
-// 		$res = $this->query("SELECT MAX(sort_no) AS max_sort_no;");
-		
-// 		if(empty($res)){
-// 			return 0;
-// 		}
-		
-// 		$sort_no = $res[0]['max_sort_no'];;
-// 		$sort_no++;
-		
-// 		return $sort_no;
-// 	}
-	
-	
-// 	/**■■■□□□■■■□□□
-// 	 * エンティティのDB保存
-// 	 * @note エンティティのidが空ならINSERT, 空でないならUPDATEになる。
-// 	 * @param [] $ent エンティティ
-// 	 * @return [] エンティティ(insertされた場合、新idがセットされている）
-// 	 */
-// 	public function saveEntity(&$ent){
-		
-// 		if(empty($ent['id'])){
-			
-// 			// ▽ idが空であればINSERTをする。
-// 			$ent = array_intersect_key($ent, array_flip($this->fillable)); // ホワイトリストによるフィルタリング
-// 			$id = $this->insertGetId($ent); // INSERT
-// 			$ent['id'] = $id;
-// 		}else{
-			
-// 			// ▽ idが空でなければUPDATEする。
-// 			$ent = array_intersect_key($ent, array_flip($this->fillable)); // ホワイトリストによるフィルタリング
-// 			$this->updateOrCreate(['id'=>$ent['id']], $ent); // UPDATE
-// 		}
-		
-// 		return $ent;
-// 	}
-	
-	
-// 	/**■■■□□□■■■□□□
-// 	 * データのDB保存
-// 	 * @param string $tbl_name テーブル名
-// 	 * @param [] $data データ（エンティティの配列）
-// 	 * @return [] データ(insertされた場合、新idがセットされている）
-// 	 */
-// 	public function saveAll($tbl_name, &$data){
-		
-// 		$data2 = [];
-// 		foreach($data as &$ent){
-// 			$data2[] = $this->save($tbl_name, $ent);
-			
-// 		}
-// 		unset($ent);
-// 		return $data2;
-// 	}
-	
 	
 	/**
 	 * 削除フラグを切り替える
@@ -404,25 +419,30 @@ class Mission extends CrudBase
 	}
 	
 	
-	// CBBXS-3021
+	// CBBXS-5029
 	/**
-	 *  雛ファイルID種別リストを取得する
-	 *  @return [] 雛ファイルID種別リスト
+	 *  雛ファイルIDリストを取得する
+	 *  @return [] 雛ファイルIDリスト
 	 */
 	public function getHinaFileList(){
-	    
-	    $query = DB::table('hina_files')->
-	       select(['id', 'hina_file_name'])->
-	       where('delete_flg',0);
-	    
-	    $res = $query->get();
-	    $list = [];
-	    foreach($res as $ent){
-	        $list[$ent->id] = $ent->hina_file_name;
-	    }
+		
+		$sql = "
+			SELECT `id`, `hina_file_name`
+			FROM hina_files
+			WHERE `delete_flg` = 0;
+		";
+		
+		$res = $this->query($sql);
+		
+		$list = [];
+		foreach($res as $ent){
+			$id = $ent['id'];
+			$list[$id] = $ent['hina_file_name'];
+		}
 
-	    return $list;
+		return $list;
 	}
+	
 
 	// CBBXE
 	

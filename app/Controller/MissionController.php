@@ -6,6 +6,13 @@ use App\Model\Mission;
 use CrudBase\Request;
 use CrudBase\CrudBase;
 
+/**
+ * 任務管理画面のコントーラクラス
+ * @version 1.0.0
+ * @since 2023-9-27
+ * @author amaraimusi
+ *
+ */
 class MissionController extends CrudBaseController {
 	
 	// 画面のバージョン → 開発者はこの画面を修正したらバージョンを変更すること。バージョンを変更するとキャッシュやセッションのクリアが自動的に行われます。
@@ -59,10 +66,11 @@ class MissionController extends CrudBaseController {
 					'to_wamei' => $request->to_wamei, // 複製先和名
 					'sort_no' => $request->sort_no, // 順番
 					'delete_flg' => $request->delete_flg, // 無効フラグ
+					'update_user_id' => $request->update_user_id, // 更新ユーザーID
 					'update_user' => $request->update_user, // 更新者
 					'ip_addr' => $request->ip_addr, // IPアドレス
-					'created' => $request->created, // 生成日時
-					'modified' => $request->modified, // 更新日
+					'created_at' => $request->created_at, // 生成日時
+					'updated_at' => $request->updated_at, // 更新日時
 
 					// CBBXE
 					
@@ -94,7 +102,10 @@ class MissionController extends CrudBaseController {
 		$data = $res['data'];
 		$data_count = $res['total'];
 
-		$missionTypeList = $model->getMissionTypeList(); // 任務種別リスト
+		// CBBXS-5001
+		$hinaFileList = $model->getHinaFileList(); // 雛ファイルIDリスト
+
+		// CBBXE
 		
 		global $g_env; // 環境データ
 		
@@ -113,8 +124,8 @@ class MissionController extends CrudBaseController {
 				'new_version' => $new_version,
 				'debug_mode' => $g_env['debug_mode'] ?? 1, // デバッグモード
 				
-				// CBBXS-3020B
-		$hinaFileIdList = $model->getHinaFileIdList(); // 雛ファイルID
+				// CBBXS-5002
+				'hinaFileList'=>$hinaFileList, // 雛ファイルIDリスト
 
 				// CBBXE
 		];
@@ -130,8 +141,8 @@ class MissionController extends CrudBaseController {
 				'this_page_version'=>$this->this_page_version,
 				'crudBaseData'=>$crudBaseData,
 				'crud_base_json'=>$crud_base_json,
-				// CBBXS-3020B
-		$hinaFileIdList = $model->getHinaFileIdList(); // 雛ファイルID
+				// CBBXS-5003
+				'hinaFileList'=>$hinaFileList, // 雛ファイルIDリスト
 
 				// CBBXE
 		]);
@@ -187,15 +198,9 @@ class MissionController extends CrudBaseController {
 
 		$ent = $model->save('missions', $ent); // DBへ登録（INSERT、UPDATE兼用）
 		
-		// ▼ ファイルアップロード関連
-		$fileUploadK = CrudBase::factoryFileUploadK();
-		$front_img_fn = $ent['img_fn'];
-		$exist_img_fn = $existEnt['img_fn'] ?? '';
-		$fRes = $fileUploadK->uploadForSpa('mission', $_FILES, $ent, 'img_fn', $front_img_fn, $exist_img_fn);
-		if($fRes['db_reg_flg']){
-			$ent['img_fn'] = $fRes['reg_fp'];
-			$ent = $model->save('missions', $ent); // DBへ登録（INSERT、UPDATE兼用）
-		}
+		// CBBXS-5005
+
+		// CBBXE
 
 		$json = json_encode($ent, JSON_HEX_TAG | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_APOS);
 		

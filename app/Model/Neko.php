@@ -4,7 +4,13 @@ namespace App\Model;
 
 use App\Model\CrudBase;
 
-
+/**
+ * ネコ管理画面のモデルクラス
+ * @version 1.0.0
+ * @since 2023-9-27
+ * @author amaraimusi
+ *
+ */
 class Neko extends CrudBase
 {
 	
@@ -108,7 +114,14 @@ class Neko extends CrudBase
 		
 		// メイン検索
 		if(!empty($searches['main_search'])){
-			$whereList[] = "CONCAT( IFNULL(nekos.neko_name, '') , IFNULL(nekos.note, '') ) LIKE '%{$searches['main_search']}%'";
+			$whereList[] = "
+				CONCAT( 
+					/* CBBXS-5017 */
+					IFNULL(nekos.neko_name, '') , 
+					IFNULL(nekos.note, ''),
+					/* CBBXE */
+					''
+				 ) LIKE '%{$searches['main_search']}%'";
 		}
 		
 		// 検索条件リストを連結する
@@ -133,9 +146,9 @@ class Neko extends CrudBase
 		}
 
 		$sql = "
-			SELECT SQL_CALC_FOUND_ROWS 
+			SELECT SQL_CALC_FOUND_ROWS
+				nekos.id as id, 
 				/* CBBXS-5019 */
-				nekos.id as id,
 				nekos.neko_val as neko_val,
 				nekos.neko_name as neko_name,
 				nekos.neko_date as neko_date,
@@ -144,6 +157,7 @@ class Neko extends CrudBase
 				nekos.neko_flg as neko_flg,
 				nekos.img_fn as img_fn,
 				nekos.note as note,
+				/* CBBXE */
 				nekos.sort_no as sort_no,
 				nekos.delete_flg as delete_flg,
 				nekos.update_user_id as update_user_id,
@@ -151,7 +165,6 @@ class Neko extends CrudBase
 				nekos.ip_addr as ip_addr,
 				nekos.created_at as created_at,
 				nekos.updated_at as updated_at
-				/* CBBXE */
 			FROM
 				nekos 
 			LEFT JOIN users ON nekos.update_user_id = users.id
@@ -189,13 +202,14 @@ class Neko extends CrudBase
 		// SQLインジェクションのサニタイズ
 		$searches = $this->sqlSanitizeW($searches);
 		
-		// CBBXS-3003
 
 		// id
 		if(!empty($searches['id'])){
 			$whereList[] = "nekos.`id` = {$searches['id']}";
 		}
-
+		
+		// CBBXS-5024
+		
 		// ネコ数値・範囲1
 		if(!empty($searches['neko_val1'])){
 			$whereList[] = "nekos.`neko_val` >= {$searches['neko_val1']}";
@@ -247,6 +261,8 @@ class Neko extends CrudBase
 		if(!empty($searches['note'])){
 			$whereList[] = "nekos.`note` LIKE '%{$searches['note']}%'";
 		}
+		
+		// CBBXE
 
 		// 順番
 		if(!empty($searches['sort_no'])){
@@ -259,7 +275,7 @@ class Neko extends CrudBase
 		}else{
 			$whereList[] = "nekos.`delete_flg` = 0";
 		}
-
+		
 		// 更新者
 		if(!empty($searches['update_user'])){
 			$whereList[] = "users.`username` = `{$searches['update_user']}`";
@@ -280,7 +296,6 @@ class Neko extends CrudBase
 			$whereList[] = "nekos.`updated_at` >= '{$searches['updated_at']}'";
 		}
 
-		// CBBXE
 		
 		return $whereList;
 	}
@@ -329,7 +344,7 @@ class Neko extends CrudBase
 	}
 	
 	
-	// CBBXS-3021
+	// CBBXS-5029
 	/**
 	 *  ネコ種別リストを取得する
 	 *  @return [] ネコ種別リスト
@@ -352,6 +367,7 @@ class Neko extends CrudBase
 
 		return $list;
 	}
+	
 	// CBBXE
 	
 	

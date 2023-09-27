@@ -6,6 +6,13 @@ use App\Model\Neko;
 use CrudBase\Request;
 use CrudBase\CrudBase;
 
+/**
+ * ネコ管理画面のコントーラクラス
+ * @version 1.0.0
+ * @since 2023-9-27
+ * @author amaraimusi
+ *
+ */
 class NekoController extends CrudBaseController {
 	
 	// 画面のバージョン → 開発者はこの画面を修正したらバージョンを変更すること。バージョンを変更するとキャッシュやセッションのクリアが自動的に行われます。
@@ -93,7 +100,9 @@ class NekoController extends CrudBaseController {
 		$data = $res['data'];
 		$data_count = $res['total'];
 
+		// CBBXS-5001
 		$nekoTypeList = $model->getNekoTypeList(); // ネコ種別リスト
+		// CBBXE
 		
 		global $g_env; // 環境データ
 		
@@ -112,7 +121,7 @@ class NekoController extends CrudBaseController {
 				'new_version' => $new_version,
 				'debug_mode' => $g_env['debug_mode'] ?? 1, // デバッグモード
 				
-				// CBBXS-3020B
+				// CBBXS-5002
 				'nekoTypeList'=>$nekoTypeList,
 				// CBBXE
 		];
@@ -128,7 +137,7 @@ class NekoController extends CrudBaseController {
 				'this_page_version'=>$this->this_page_version,
 				'crudBaseData'=>$crudBaseData,
 				'crud_base_json'=>$crud_base_json,
-				// CBBXS-3020B
+				// CBBXS-5003
 				'nekoTypeList'=>$nekoTypeList,
 				// CBBXE
 		]);
@@ -184,6 +193,7 @@ class NekoController extends CrudBaseController {
 
 		$ent = $model->save('nekos', $ent); // DBへ登録（INSERT、UPDATE兼用）
 		
+		// CBBXS-5005
 		// ▼ ファイルアップロード関連
 		$fileUploadK = CrudBase::factoryFileUploadK();
 		$front_img_fn = $ent['img_fn'];
@@ -193,6 +203,7 @@ class NekoController extends CrudBaseController {
 			$ent['img_fn'] = $fRes['reg_fp'];
 			$ent = $model->save('nekos', $ent); // DBへ登録（INSERT、UPDATE兼用）
 		}
+		// CBBXE
 
 		$json = json_encode($ent, JSON_HEX_TAG | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_APOS);
 		

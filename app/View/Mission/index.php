@@ -56,23 +56,28 @@ $debug_mode = $crudBaseData['debug_mode'];
 
 			<div><?php echo $cbh->searchFormId(); ?></div>
 			
-			
-			<div><?php echo $cbh->searchFormIntRange('mission_val', '任務数値'); ?></div>
-			<div><?php echo $cbh->searchFormText('mission_name', '任務名', ['pattern'=>'[\u30A1-\u30FF]+', 'err_msg'=>'👈%display_nameはカタカナのみ入力可能です。']); ?></div>
-			
-			<div><?php echo $cbh->searchFormDateRng('mission_date', '任務日付'); ?></div>
-			<div><?php echo $cbh->searchFormSelect('mission_type', '任務種別', $missionTypeList); ?></div>
-			<div><?php echo $cbh->searchFormDatetime('mission_dt', '任務日時'); ?></div>
-			<div><?php echo $cbh->searchFormFlg('mission_flg', '任務フラグ'); ?></div>
-			<div><?php echo $cbh->searchFormText('img_fn', '画像ファイル名'); ?></div>
-			<div><?php echo $cbh->searchFormText('note', '備考'); ?></div>
+			<!-- CBBXS-5030 -->
+			<div><?php echo $cbh->searchFormText('mission_name', '任務名'); ?></div>
+			<div><?php echo $cbh->searchFormSelect('hina_file_id', '雛ファイルID', $hinaFileList); ?></div>
+			<div><?php echo $cbh->searchFormText('from_path', '複製元パス'); ?></div>
+			<div><?php echo $cbh->searchFormText('from_scr_code', '複製元画面コード'); ?></div>
+			<div><?php echo $cbh->searchFormText('from_db_name', '複製元DB名'); ?></div>
+			<div><?php echo $cbh->searchFormText('from_tbl_name', '複製元テーブル名'); ?></div>
+			<div><?php echo $cbh->searchFormText('from_wamei', '複製元和名'); ?></div>
+			<div><?php echo $cbh->searchFormText('to_path', '複製先パス'); ?></div>
+			<div><?php echo $cbh->searchFormText('to_scr_code', '複製先画面コード'); ?></div>
+			<div><?php echo $cbh->searchFormText('to_db_name', '複製先DB名'); ?></div>
+			<div><?php echo $cbh->searchFormText('to_tbl_name', '複製先テーブル名'); ?></div>
+			<div><?php echo $cbh->searchFormText('to_wamei', '複製先和名'); ?></div>
+
+			<!-- CBBXE -->
 			<div><?php echo $cbh->searchFormInt('sort_no', '順番'); ?></div>
 			<div><?php echo $cbh->searchFormText('ip_addr', 'IPアドレス'); ?></div>
-			<?php echo $cbh->searchFormDelete(); ?>
+			<div><?php echo $cbh->searchFormDelete(); ?></div>
 			<div><?php echo $cbh->searchFormText('update_user', '更新者'); ?></div>
-			<?php echo $cbh->searchFormCreated(); ?>
-			<?php echo $cbh->searchFormUpdated(); ?>
-			<?php echo $cbh->searchFormLimit(); ?>
+			<div><?php echo $cbh->searchFormCreated(); ?></div>
+			<div><?php echo $cbh->searchFormUpdated(); ?></div>
+			<div><?php echo $cbh->searchFormLimit(); ?></div>
 
 			<button type="button" class ="btn btn-outline-secondary" onclick="$('#search_dtl_div').toggle(300);">＜ 閉じる</button>
 			
@@ -117,28 +122,29 @@ $debug_mode = $crudBaseData['debug_mode'];
 <table id="main_tbl" class="table table-striped table-bordered table-condensed">
 	<thead>
 		<tr>
-			<!-- CBBXS-3035 -->
-			<th>{!! BaseXHelper::sortLink($searches, 'mission', 'id', 'id') !!}</th>
-			<th>{!! BaseXHelper::sortLink($searches, 'mission', 'mission_name', '任務名') !!}</th>
-			<th>{!! BaseXHelper::sortLink($searches, 'mission', 'hina_file_id', '雛ファイルID') !!}</th>
-			<th>{!! BaseXHelper::sortLink($searches, 'mission', 'from_path', '複製元パス') !!}</th>
-			<th>{!! BaseXHelper::sortLink($searches, 'mission', 'from_scr_code', '複製元画面コード') !!}</th>
-			<th>{!! BaseXHelper::sortLink($searches, 'mission', 'from_db_name', '複製元DB名') !!}</th>
-			<th>{!! BaseXHelper::sortLink($searches, 'mission', 'from_tbl_name', '複製元テーブル名') !!}</th>
-			<th>{!! BaseXHelper::sortLink($searches, 'mission', 'from_wamei', '複製元和名') !!}</th>
-			<th>{!! BaseXHelper::sortLink($searches, 'mission', 'to_path', '複製先パス') !!}</th>
-			<th>{!! BaseXHelper::sortLink($searches, 'mission', 'to_scr_code', '複製先画面コード') !!}</th>
-			<th>{!! BaseXHelper::sortLink($searches, 'mission', 'to_db_name', '複製先DB名') !!}</th>
-			<th>{!! BaseXHelper::sortLink($searches, 'mission', 'to_tbl_name', '複製先テーブル名') !!}</th>
-			<th>{!! BaseXHelper::sortLink($searches, 'mission', 'to_wamei', '複製先和名') !!}</th>
-			<th>{!! BaseXHelper::sortLink($searches, 'mission', 'sort_no', '順番') !!}</th>
-			<th>{!! BaseXHelper::sortLink($searches, 'mission', 'delete_flg', '無効フラグ') !!}</th>
-			<th>{!! BaseXHelper::sortLink($searches, 'mission', 'update_user', '更新者') !!}</th>
-			<th>{!! BaseXHelper::sortLink($searches, 'mission', 'ip_addr', 'IPアドレス') !!}</th>
-			<th>{!! BaseXHelper::sortLink($searches, 'mission', 'created', '生成日時') !!}</th>
-			<th>{!! BaseXHelper::sortLink($searches, 'mission', 'modified', '更新日') !!}</th>
+			<th data-field='id'><?php echo $cbh->sortLink($searches, 'mission', 'id', 'ID'); ?></th>
+			<!-- CBBXS-5035 -->
+			<th data-field='mission_name'><?php echo $cbh->sortLink($searches, 'mission', 'mission_name', '任務名'); ?></th>
+			<th data-field='hina_file_id'><?php echo $cbh->sortLink($searches, 'mission', 'hina_file_id', '雛ファイルID'); ?></th>
+			<th data-field='from_path'><?php echo $cbh->sortLink($searches, 'mission', 'from_path', '複製元パス'); ?></th>
+			<th data-field='from_scr_code'><?php echo $cbh->sortLink($searches, 'mission', 'from_scr_code', '複製元画面コード'); ?></th>
+			<th data-field='from_db_name'><?php echo $cbh->sortLink($searches, 'mission', 'from_db_name', '複製元DB名'); ?></th>
+			<th data-field='from_tbl_name'><?php echo $cbh->sortLink($searches, 'mission', 'from_tbl_name', '複製元テーブル名'); ?></th>
+			<th data-field='from_wamei'><?php echo $cbh->sortLink($searches, 'mission', 'from_wamei', '複製元和名'); ?></th>
+			<th data-field='to_path'><?php echo $cbh->sortLink($searches, 'mission', 'to_path', '複製先パス'); ?></th>
+			<th data-field='to_scr_code'><?php echo $cbh->sortLink($searches, 'mission', 'to_scr_code', '複製先画面コード'); ?></th>
+			<th data-field='to_db_name'><?php echo $cbh->sortLink($searches, 'mission', 'to_db_name', '複製先DB名'); ?></th>
+			<th data-field='to_tbl_name'><?php echo $cbh->sortLink($searches, 'mission', 'to_tbl_name', '複製先テーブル名'); ?></th>
+			<th data-field='to_wamei'><?php echo $cbh->sortLink($searches, 'mission', 'to_wamei', '複製先和名'); ?></th>
 
 			<!-- CBBXE -->
+			<th data-field='sort_no'><?php echo $cbh->sortLink($searches, 'mission', 'sort_no', '順番'); ?></th>
+			<th data-field='delete_flg'><?php echo $cbh->sortLink($searches, 'mission', 'delete_flg', '無効フラグ'); ?></th>
+			<th data-field='update_user_id'><?php echo $cbh->sortLink($searches, 'mission', 'update_user_id', '更新者'); ?></th>
+			<th data-field='ip_addr'><?php echo $cbh->sortLink($searches, 'mission', 'ip_addr', 'IPアドレス'); ?></th>
+			<th data-field='created_at'><?php echo $cbh->sortLink($searches, 'mission', 'created_at', '生成日時'); ?></th>
+			<th data-field='updated_at'><?php echo $cbh->sortLink($searches, 'mission', 'updated_at', '更新日'); ?></th>
+
 			<th class='js_btns' 'style="width:280px"></th>
 		</tr>
 	</thead>
@@ -146,14 +152,21 @@ $debug_mode = $crudBaseData['debug_mode'];
 		<?php foreach($data as $ent){?>
 		<tr>
 			<td><?php echo $cbh->tdId($ent['id']); ?></td>
-			<td><?php echo $cbh->tdUnit($ent['mission_val'], 'mission_val', null, 'cm'); ?></td>
+			<!-- CBBXS-5040 -->
 			<td><?php echo $cbh->tdStr($ent['mission_name']); ?></td>
-			<td><?php echo $cbh->tdDate($ent['mission_date']); ?></td>
-			<td><?php echo $cbh->tdList($ent['mission_type'], $missionTypeList); ?></td>
-			<td><?php echo $cbh->tdDate($ent['mission_dt']); ?></td>
-			<td><?php echo $cbh->tdFlg($ent['mission_flg']);  ?></td>
-			<td><?php echo $cbh->tdImg($ent, 'img_fn'); ?></td>
-			<td><?php echo $cbh->tdNote($ent['note'], 'note', 30) ?></td>
+			<td><?php echo $cbh->tdList($ent['hina_file_id'], $hinaFileList); ?></td>
+			<td><?php echo $cbh->tdStr($ent['from_path']); ?></td>
+			<td><?php echo $cbh->tdStr($ent['from_scr_code']); ?></td>
+			<td><?php echo $cbh->tdStr($ent['from_db_name']); ?></td>
+			<td><?php echo $cbh->tdStr($ent['from_tbl_name']); ?></td>
+			<td><?php echo $cbh->tdStr($ent['from_wamei']); ?></td>
+			<td><?php echo $cbh->tdStr($ent['to_path']); ?></td>
+			<td><?php echo $cbh->tdStr($ent['to_scr_code']); ?></td>
+			<td><?php echo $cbh->tdStr($ent['to_db_name']); ?></td>
+			<td><?php echo $cbh->tdStr($ent['to_tbl_name']); ?></td>
+			<td><?php echo $cbh->tdStr($ent['to_wamei']); ?></td>
+
+			<!-- CBBXE -->
 			<td><?php echo $cbh->tdStr($ent['sort_no']); ?></td>
 			<td><?php echo $cbh->tdDeleteFlg($ent['delete_flg']); ?></td>
 			<td><?php echo $cbh->tdStr($ent['update_user']); ?></td>
