@@ -1324,17 +1324,15 @@ class CrudBaseHelper
     	}
     	
     	$html = "
-			<div class='kj_div kj_wrap' data-field='row_limit' style='width:100px;display:inline-block;'>
-				<div class='input select'>
-					<select name='per_page' id='row_limit'  class='kjs_inp form-control'>
-						{$option_html}
-					</select>
-				</div>
+			<div  data-field='row_limit' >
+				<select name='per_page' id='row_limit'  class='form-control search_btn_x js_search_inpl' style='width:8em'>
+					{$option_html}
+				</select>
 			</div>
 		";
-						
-						return $html;
-						
+					
+					return $html;
+					
     }
     
     

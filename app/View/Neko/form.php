@@ -68,7 +68,8 @@
 	<div class="row mt-2">
 		<div class='col-md-2' >ネコ日時</div>
 		<div class='col-md-10'>
-			<input type="datetime-local" name="neko_dt" class="form-control form-control-lg " value=""  pattern="([0-9]{4})(\/|-)([0-9]{1,2})(\/|-)([0-9]{1,2}) \d{2}:\d{2}:\d{2}" title="日時形式（Y-m-d H:i:s）で入力してください(例：2012-12-12 01:02:03)" />
+			<!-- datetime-local要素はpattern属性を指定できないので注意。強制的にバリデーションが発動してまう。 -->
+			<input type="datetime-local" name="neko_dt" class="form-control form-control-lg " value=""  title="日時形式（Y-m-d H:i:s）で入力してください(例：2012-12-12 01:02:03)" />
 			<span class="text-danger" data-valid-err="neko_dt" ></span>
 		</div>
 	</div>
