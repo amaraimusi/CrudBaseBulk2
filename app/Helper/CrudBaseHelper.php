@@ -265,10 +265,15 @@ class CrudBaseHelper
      * @return string
      */
     public function tdUnit($value, $field, $unit_f='', $unit_b='', $option=[]){
-
+    	
+    	
+    	// 数値でない
+    	$display_value='';
     	if(is_numeric($value)){
     		if(empty($option['comma'])){
-    			$value = number_format($value);
+    			$display_value = number_format($value);
+    		}else{
+    			$display_value = $value;
     		}
     	}else{
     		$value = h($value);
@@ -276,7 +281,7 @@ class CrudBaseHelper
     	
     	$html = "
 			<span>{$unit_f}</span>
-			<span class='js_display_value'>{$value}</span>
+			<span class='js_display_value'>{$display_value}</span>
 			<span>{$unit_b}</span>
 			<span class='js_original_value' style='display:none'>{$value}</span>
 		";
